@@ -40,7 +40,7 @@
       overflow-x: hidden;
     }
 
-    /* ─── EFECTO DE RUIDO MATRIX ────────────────────────── */
+    /* ─── EFECTO DE RUIDO DISCRETO ──────────────────────── */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -74,9 +74,7 @@
       background-clip: text;
       user-select: none;
     }
-    .logo span { color: #fff; -webkit-text-fill-color: #fff; }
 
-    /* BOTÓN INSTALAR PWA */
     #pwa-install-btn {
       background: rgba(0, 255, 102, 0.1);
       border: 1px solid var(--accent);
@@ -86,7 +84,7 @@
       font-size: 0.8rem;
       font-weight: 500;
       cursor: pointer;
-      display: none; /* Se enciende si Chrome da permiso */
+      display: none;
       margin-right: 15px;
       transition: background 0.2s;
     }
@@ -141,11 +139,11 @@
     .skeleton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(0,255,102,0.03), transparent); animation: shimmer 1.5s infinite; }
     @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 
-    /* ─── MODAL VERDE MULTIMEDIA ─────────────────────────── */
+    /* ─── MODAL MULTIMEDIA ─────────────────────────── */
     #modal-backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
     #modal-backdrop.open { opacity: 1; pointer-events: all; }
 
-    #modal { background: var(--glass-bg); border: 1px solid var(--glass-border); radius: 16px; width: 100%; max-width: 960px; max-height: 90vh; overflow-y: auto; box-shadow: 0 40px 100px rgba(0,0,0,0.9); transition: transform 0.3s ease; }
+    #modal { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; width: 100%; max-width: 960px; max-height: 90vh; overflow-y: auto; box-shadow: 0 40px 100px rgba(0,0,0,0.9); transition: transform 0.3s ease; }
     .modal-header { position: relative; height: 320px; overflow: hidden; }
     #modal-backdrop-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
     .modal-header-gradient { position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(to top, var(--bg), transparent); }
@@ -156,7 +154,6 @@
     .modal-tag { padding: 3px 10px; border-radius: 4px; font-size: 0.7rem; background: rgba(0,255,102,0.08); border: 1px solid rgba(0,255,102,0.2); color: #fff; }
     .modal-tag.year { color: var(--accent); }
 
-    /* CONTROLES DEL MODAL */
     #close-btn { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 12; }
     #close-btn:hover { background: #ff3333; }
     
@@ -171,7 +168,7 @@
     #movie-frame { width: 100%; height: 100%; border: none; display: block; }
     .player-note { margin-top: 10px; font-size: 0.72rem; color: var(--muted); text-align: center; }
 
-    /* ─── MODAL COMPLETO FORZADO POR CSS ─────────────────── */
+    /* ─── MODAL COMPLETO APALASADO (HACK CSS) ───────────── */
     #modal.forced-fullscreen { position: fixed !important; inset: 0 !important; width: 100vw !important; max-width: 100vw !important; height: 100vh !important; max-height: 100vh !important; border-radius: 0 !important; z-index: 9999 !important; }
     #modal.forced-fullscreen .modal-header, #modal.forced-fullscreen #modal-overview, #modal.forced-fullscreen .player-note { display: none !important; }
     #modal.forced-fullscreen .modal-body { padding: 0 !important; height: 100vh !important; }
@@ -220,7 +217,7 @@
         <div class="player-wrap">
           <iframe id="movie-frame" src="" allowfullscreen allow="fullscreen" loading="lazy"></iframe>
         </div>
-        <p class="player-note">Servidor PlayIMDb Activo. Si el botón interno de pantalla grande falla, usa nuestro botón ⛶ de arriba.</p>
+        <p class="player-note">Servidor PlayIMDb Activo. Si hay problemas de rotación, usa nuestro botón ⛶.</p>
       </div>
     </div>
   </div>
@@ -280,7 +277,7 @@
       });
     }
 
-    /* ─── LOGICA DE CONCATENACIÓN AUTOMÁTICA tt DE IMDB ── */
+    /* ─── CAPTURAR tt DE IMDB DINÁMICAMENTE ─────────────── */
     async function openModal(movie) {
       document.getElementById("modal-title").textContent = movie.title;
       document.getElementById("modal-overview").textContent = movie.overview || "Sin sinopsis.";
@@ -304,8 +301,13 @@
     }
 
     function closeModal() {
+      const modal = document.getElementById("modal");
+      if (modal.classList.contains("forced-fullscreen")) {
+        // Si el usuario cierra el modal estando maximizado, limpiamos el historial
+        history.back();
+      }
       backdrop.classList.remove("open");
-      document.getElementById("modal").classList.remove("forced-fullscreen");
+      modal.classList.remove("forced-fullscreen");
       fsBtn.textContent = "⛶";
       movieFrame.src = ""; 
       document.body.style.overflow = "";
@@ -314,20 +316,51 @@
     closeBtn.addEventListener("click", closeModal);
     backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
 
-    /* ─── BOTÓN DE PANTALLA COMPLETA HACK CSS ───────────── */
+    /* ─── LÓGICA DE PANTALLA COMPLETA & RUTA DE GESTOS ──── */
     fsBtn.addEventListener("click", () => {
+      toggleCustomFullscreen();
+    });
+
+    function toggleCustomFullscreen() {
       const modal = document.getElementById("modal");
-      modal.classList.toggle("forced-fullscreen");
-      if(modal.classList.contains("forced-fullscreen")) {
+      
+      if(!modal.classList.contains("forced-fullscreen")) {
+        modal.classList.add("forced-fullscreen");
         fsBtn.textContent = "✕";
-        if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(() => {});
+        
+        // 1. Forzar rotación apaisada (Horizontal)
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock("landscape").catch(() => {
+            console.log("Active la rotación automática en su dispositivo móvil");
+          });
+        }
+        
+        // 2. Insertar paso falso en el historial para capturar el gesto "Atrás" de Android
+        history.pushState({ fullscreenActive: true }, "");
+        
       } else {
+        modal.classList.remove("forced-fullscreen");
         fsBtn.textContent = "⛶";
-        if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+        
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+      }
+    }
+
+    // 3. Escuchar el gesto físico de deslizar desde el borde para volver atrás
+    window.addEventListener("popstate", () => {
+      const modal = document.getElementById("modal");
+      if (modal.classList.contains("forced-fullscreen")) {
+        modal.classList.remove("forced-fullscreen");
+        fsBtn.textContent = "⛶";
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
       }
     });
 
-    /* ─── BUSCADOR ──────────────────────────────────────── */
+    /* ─── BUSCADOR & AUXILIARES ─────────────────────────── */
     searchEl.addEventListener("input", (e) => {
       const query = e.target.value.toLowerCase().trim();
       displayed = query ? allMovies.filter(m => m.title.toLowerCase().includes(query)) : allMovies;
@@ -341,23 +374,17 @@
 
     loadMovies();
 
-    /* ═══════════════════════════════════════════════════════
-       REGISTRO DE PWA (Habilita la instalación en Chrome)
-       ───────────────────────────────────────────────────── */
+    /* ─── REGISTRO PWA PARA INSTALACIÓN ─────────────────── */
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(() => console.log("Service Worker registrado con éxito"))
-        .catch(err => console.log("Fallo en Service Worker", err));
+      navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
     }
 
     let deferredPrompt;
     const installBtn = document.getElementById("pwa-install-btn");
 
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Chrome dispara esto si el manifest.json y sw.js están bien configurados
       e.preventDefault();
       deferredPrompt = e;
-      // Mostramos el botón de instalación en la barra superior
       installBtn.style.display = "block";
     });
 
@@ -365,16 +392,12 @@
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          console.log('El usuario instaló Muzaflix');
-          installBtn.style.display = "none";
-        }
+        if (outcome === 'accepted') installBtn.style.display = "none";
         deferredPrompt = null;
       }
     });
 
     window.addEventListener('appinstalled', () => {
-      console.log('Muzaflix instalada correctamente');
       installBtn.style.display = "none";
     });
   </script>
