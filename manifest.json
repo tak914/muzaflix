@@ -1,0 +1,18 @@
+{
+  "name": "Muzaflix Streaming",
+  "short_name": "Muzaflix",
+  "description": "Tu clon de Netflix automatizado en color verde con PlayIMDb",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#050a05",
+  "theme_color": "#00ff66",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/fluent/512/movie-projector.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
