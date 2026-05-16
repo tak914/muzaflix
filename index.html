@@ -23,7 +23,7 @@
       --gold:         #f5c518;
       --text:         #e2eee2;
       --muted:        #668872;
-      --glass-bg:     rgba(5,10,6,0.88);
+      --glass-bg: rgba(12,16,14,0.58);
       --glass-border: rgba(0,255,102,0.15);
       --card-w:       160px;
     }
@@ -85,18 +85,158 @@
     }
     #search:focus { border-color: var(--accent); background: rgba(0,255,102,0.07); }
 
-    /* ─── HERO ───────────────────────────────────── */
-    .hero { padding: 56px 40px 0; display: flex; align-items: flex-end; gap: 4px; }
-    .hero-label {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: 2px; color: #fff;
-    }
-    .hero-label em {
-      font-style: normal;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-    .hero-sub { padding: 10px 40px 32px; color: var(--muted); font-size: 0.875rem; }
+  /* ─── HERO NETFLIX ───────────────────────── */
+
+.hero-featured {
+  position: relative;
+  width: 100%;
+  height: 78vh;
+  min-height: 520px;
+
+  display: flex;
+  align-items: flex-end;
+
+  padding: 60px 40px;
+
+  overflow: hidden;
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(to top,
+      var(--bg) 0%,
+      rgba(0,0,0,0.2) 45%,
+      rgba(0,0,0,0.6) 100%),
+
+    linear-gradient(to right,
+      rgba(0,0,0,0.88) 0%,
+      rgba(0,0,0,0.4) 45%,
+      transparent 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 650px;
+}
+
+.hero-badge {
+  display: inline-block;
+
+  background: var(--accent);
+  color: #000;
+
+  padding: 5px 12px;
+
+  border-radius: 6px;
+
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  margin-bottom: 18px;
+}
+
+#hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+
+  font-size: clamp(3rem, 8vw, 6rem);
+
+  line-height: 0.9;
+
+  color: #fff;
+
+  margin-bottom: 18px;
+
+  letter-spacing: 2px;
+}
+
+#hero-description {
+  color: #ddd;
+
+  font-size: 1rem;
+
+  line-height: 1.7;
+
+  max-width: 600px;
+
+  margin-bottom: 26px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero-btn {
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 14px 26px;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
+}
+
+.hero-btn:hover {
+  transform: scale(1.04);
+}
+
+.hero-btn.play {
+  background: var(--accent);
+  color: #000;
+}
+
+.hero-btn.info {
+  background: rgba(255,255,255,0.08);
+
+  color: #fff;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 10px 30px rgba(0,0,0,0.25);
+}
+
+@media (max-width: 600px) {
+
+  .hero-featured {
+    height: 65vh;
+    min-height: 420px;
+
+    padding: 30px 16px;
+  }
+
+  #hero-description {
+    font-size: 0.88rem;
+  }
+
+  .hero-btn {
+    width: 100%;
+  }
+}
+
+
+
 
     /* ─── SECTIONS (carruseles) ───────────────────── */
     .section { padding: 0 0 48px; }
@@ -131,7 +271,12 @@
       animation: fadeSlide 0.5s ease both;
     }
     @keyframes fadeSlide { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .card:hover { transform: scale(1.07) translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.8); border-color: var(--accent); }
+    .card:hover { transform: scale(1.07) translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.8); border-color: var(--accent);
+    backdrop-filter: blur(12px);
+
+box-shadow:
+  0 20px 60px rgba(0,0,0,0.8),
+  0 0 0 1px rgba(255,255,255,0.06); }
     .card img { width:100%; height:100%; object-fit:cover; display:block; }
     .card-overlay {
       position: absolute; inset: 0;
@@ -171,19 +316,34 @@
     /* ─── MODAL ──────────────────────────────────── */
     #modal-backdrop {
       position: fixed; inset: 0; z-index: 200;
-      background: rgba(0,0,0,0.92); backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.92); 
       display: flex; align-items: center; justify-content: center; padding: 20px;
       opacity: 0; pointer-events: none; transition: opacity 0.3s;
     }
     #modal-backdrop.open { opacity: 1; pointer-events: all; }
 
     #modal {
-      background: var(--glass-bg); border: 1px solid var(--glass-border);
-      border-radius: 16px; width: 100%; max-width: 960px;
-      max-height: 90vh; overflow-y: auto;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.9);
-      transition: transform 0.3s ease;
-    }
+  background: rgba(10,12,12,0.52);
+
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  border-radius: 22px;
+
+  width: 100%;
+  max-width: 960px;
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  box-shadow:
+    0 30px 80px rgba(0,0,0,0.75),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+
+  transition: transform 0.3s ease;
+}
     .modal-header { position: relative; height: 300px; overflow: hidden; }
     #modal-backdrop-img { width:100%; height:100%; object-fit:cover; filter:brightness(0.4); }
     .modal-header-gradient { position:absolute; bottom:0; left:0; right:0; height:60%; background:linear-gradient(to top, var(--bg), transparent); }
@@ -213,6 +373,7 @@
     #modal-overview { font-size:0.9rem; line-height:1.7; color:#ccc; margin-bottom:20px; }
 
     /* ─── SELECTORES TV ──────────────────────────── */
+    
     #tv-selectors {
       display: none; gap: 14px; margin-bottom: 18px; align-items: center; flex-wrap: wrap;
     }
@@ -233,6 +394,7 @@
     }
     .tv-load-btn:hover { opacity:0.85; }
 
+
     /* ─── FAVORITOS BOTÓN ────────────────────────── */
     .fav-btn {
       display:inline-flex; align-items:center; gap:8px;
@@ -245,12 +407,82 @@
     .fav-btn svg { width:15px; height:15px; }
 
     /* ─── REPRODUCTOR ────────────────────────────── */
-    .player-wrap {
-      position:relative; width:100%; aspect-ratio:16/9; border-radius:10px;
-      overflow:hidden; background:#000; border:1px solid var(--border);
-    }
+  .player-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 10px;
+  overflow: visible;
+  background: #000;
+  border: 1px solid var(--border);
+}
     #movie-frame { width:100%; height:100%; border:none; display:block; }
     .player-note { margin-top:8px; font-size:0.72rem; color:var(--muted); text-align:center; }
+
+
+
+/* ─── NEXT EPISODE ───────────────────────── */
+
+#next-episode-overlay {
+
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0,0,0,0.82);
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  z-index: 20;
+}
+
+.next-box {
+
+  text-align: center;
+
+  background: rgba(10,10,10,0.94);
+
+  border: 1px solid var(--glass-border);
+
+  padding: 30px;
+
+  border-radius: 16px;
+
+  width: min(90%, 380px);
+}
+
+.next-box h3 {
+
+  font-size: 1.5rem;
+
+  margin-bottom: 10px;
+}
+
+.next-box p {
+
+  color: #bbb;
+
+  margin-bottom: 20px;
+}
+
+#play-next-btn {
+
+  background: var(--accent);
+
+  color: #000;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px 24px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
 
     /* ─── FULLSCREEN FORZADO ─────────────────────── */
     #modal.forced-fullscreen {
@@ -266,10 +498,158 @@
     #modal.forced-fullscreen .player-note { display:none !important; }
     #modal.forced-fullscreen .modal-body { padding:0 !important; height:100vh !important; }
     #modal.forced-fullscreen .player-wrap {
-      width:100vw !important; height:100vh !important;
-      border-radius:0 !important; border:none !important;
-    }
+  width:100vw !important;
+  height:100vh !important;
+  border-radius:0 !important;
+  border:none !important;
+}
 
+/* FULLSCREEN NATIVO ANDROID */
+
+.player-wrap:fullscreen,
+.player-wrap:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  overflow: hidden;
+}
+
+.player-wrap:fullscreen iframe,
+.player-wrap:-webkit-full-screen iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+/* ─── PERFILES ─────────────────────────── */
+
+#profile-screen {
+
+  position: fixed;
+  inset: 0;
+
+  background: #000;
+
+  z-index: 99999;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 30px;
+}
+
+.profile-title {
+
+  font-family: 'Bebas Neue', sans-serif;
+
+  font-size: clamp(2rem, 5vw, 4rem);
+
+  letter-spacing: 2px;
+}
+
+#profile-list {
+
+  display: flex;
+  gap: 24px;
+
+  flex-wrap: wrap;
+
+  justify-content: center;
+}
+
+.profile-card {
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 12px;
+
+  cursor: pointer;
+
+  transition: transform 0.25s;
+}
+
+.profile-card:hover {
+
+  transform: scale(1.08);
+}
+
+.profile-avatar {
+
+  width: 110px;
+  height: 110px;
+
+  border-radius: 18px;
+
+  background: linear-gradient(
+    135deg,
+    var(--accent),
+    var(--accent2)
+  );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 2.5rem;
+  font-weight: bold;
+
+  color: #000;
+}
+
+.profile-name {
+
+  font-size: 0.95rem;
+
+  color: #ddd;
+}
+
+#add-profile-btn {
+
+  margin-top: 20px;
+
+  background: transparent;
+
+  border: 1px solid #666;
+
+  color: #aaa;
+
+  padding: 12px 22px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+}
+
+#add-profile-btn:hover {
+
+  border-color: #fff;
+  color: #fff;
+}
+
+/* NUEVO AVATAR IMAGE STYLE */
+.profile-avatar-img {
+
+  width: 110px;
+  height: 110px;
+
+  object-fit: cover;
+
+  border-radius: 18px;
+
+  border: 2px solid rgba(255,255,255,0.12);
+
+  transition: 0.25s;
+}
+
+.profile-card:hover .profile-avatar-img {
+  border-color: var(--accent);
+}
     /* ─── SEARCH OVERLAY ─────────────────────────── */
     #search-results { padding: 0 40px 60px; }
     #search-results .grid-search {
@@ -303,6 +683,12 @@
       background: #0f0f0f; color: #e5e5e5; z-index: 1060;
       transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       overflow-y: auto; padding: 20px; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif;
+      background: rgba(10,10,10,0.72);
+
+backdrop-filter: blur(9px);
+-webkit-backdrop-filter: blur(9px);
+
+border-right: 1px solid rgba(255,255,255,0.06);
     }
     .muzaflix-offcanvas.active { transform: translateX(0); }
 
@@ -337,53 +723,18 @@
       cursor: pointer; transition: background 0.2s;
     }
     .muzaflix-cw-item:hover { background: #333; color: #fff; }
-    
-    
-(function() {
-  'use strict';
-  document.addEventListener('DOMContentLoaded', () => {
-    // 🔍 Busca el botón ⛶ exacto (intercepta antes que el player nativo)
-    const fsBtn = [...document.querySelectorAll('button, span, a, div')].find(el => 
-      el.textContent.trim() === '⛶' || 
-      el.innerHTML.includes('⛶') || 
-      el.getAttribute('aria-label')?.includes('Pantalla completa')
-    );
-    
-    const video = document.querySelector('video');
-    const player = video?.closest('.player-container') || document.querySelector('[data-player]') || video?.parentElement;
+    #muzaflix-cw-container {
+  padding-bottom: 48px;
+}
 
-    if (!fsBtn || !player) return console.warn('⛶ Botón o reproductor no encontrado');
+@media (max-width: 600px) {
+  #muzaflix-cw-container {
+    padding-bottom: 36px;
+  }
+}
+        
 
-    // ⚡ Intercepta en fase de captura para ganar antes que el player nativo
-    fsBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopImmediatePropagation(); // 🚫 Evita que el reproductor ejecute su FS vertical
 
-      const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
-      const target = video || player;
-
-      if (!isFS) {
-        // 1️⃣ Entrar en fullscreen
-        const enterFS = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen;
-        if (enterFS) {
-          enterFS.call(target)
-            .then(() => {
-              // 2️⃣ Forzar horizontal inmediatamente después de concederse
-              if (screen.orientation?.lock) screen.orientation.lock('landscape-primary').catch(() => {});
-            })
-            .catch(err => console.warn('📱 Fullscreen bloqueado:', err.message));
-        }
-      } else {
-        // 📉 Salir de fullscreen
-        const exitFS = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
-        if (exitFS) exitFS.call(document);
-        if (screen.orientation?.unlock) screen.orientation.unlock();
-      }
-    }, true); // useCapture: true → se ejecuta ANTES que los listeners del player
-  });
-})();
-
-    <style>
 /* Elimina propiedades que Chrome Android rechaza para fullscreen */
 .player-container, video {
   transform: none !important;
@@ -391,12 +742,71 @@
   backdrop-filter: none !important;
   contain: none !important;
 }
-</style>
+
+#modal::before,
+.muzaflix-offcanvas::before {
+
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.10),
+      transparent ⁹0%
+    );
+}
     
   </style>
 </head>
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('add-profile-btn');
+  
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const nombre = prompt('Nombre del nuevo perfil:');
+      if (nombre && nombre.trim() !== '') {
+        // Ejemplo simple: añadirlo visualmente a la lista
+        const perfil = document.createElement('div');
+        perfil.className = 'profile-item';
+        perfil.textContent = nombre.trim();
+        document.getElementById('profile-list').appendChild(perfil);
+        
+        console.log('Perfil creado:', nombre.trim());
+        // Aquí conectarías
+         (localStorage, API, modal, etc.)
+      }
+    });
+  }
+});
 <body>
 
+<div id="profile-screen">
+  <h1 class="profile-title">¿Quién está viendo?</h1>
+  <div id="profile-list">
+    <!-- Aquí se renderizarán los perfiles existentes -->
+  </div>
+  
+  <!-- Un solo botón, con ID único -->
+  <button id="add-profile-btn" class="add-profile-btn">
+    + Agregar perfil
+  </button>
+</div>
+
+</div>
+
+  <button id="add-profile-btn">
+    + Agregar perfil
+  </button>
+
+</div>
   <button id="muzaflix-menu-toggle" class="muzaflix-menu-toggle" aria-label="Abrir menú">☰</button>
 
   <aside id="muzaflix-sidebar" class="muzaflix-offcanvas">
@@ -406,6 +816,11 @@
     </div>
     <nav class="muzaflix-nav">
       <ul>
+          
+          <li>
+  <a href="#" id="switch-profile-btn">👤 Cambiar perfil</a>
+</li>
+
         <li><a href="#" id="muzaflix-nav-inicio">🏠 Inicio</a></li>
         <li>
           <a href="#" id="muzaflix-nav-categorias">🎬 Categorías</a>
@@ -441,17 +856,44 @@
   </header>
 
   <main id="main-content">
-    <div class="hero">
-      <h1 class="hero-label">En <em>Muzaflix</em></h1>
+    <section id="hero-featured" class="hero-featured">
+
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+
+    <span class="hero-badge">
+      TOP DEL DÍA
+    </span>
+
+    <h1 id="hero-title"></h1>
+
+    <p id="hero-description"></p>
+
+    <div class="hero-buttons">
+
+      <button id="hero-play-btn" class="hero-btn play">
+        ▶ Ver ahora
+      </button>
+
+      <button id="hero-info-btn" class="hero-btn info">
+        ℹ Más información
+      </button>
+
     </div>
-    <p class="hero-sub">Tus películas y series favoritas, en un solo lugar.</p>
+
+  </div>
+
+</section>
+
+
 
     <div id="search-results" style="display:none;">
       <div class="section-title" id="search-label">Resultados</div>
       <div class="grid-search" id="search-grid"></div>
     </div>
 
-    <div id="muzaflix-cw-container" style="padding: 0 40px;"></div>
+   <div id="muzaflix-cw-container"></div>
 
     <div id="catalog">
       <div class="section" id="section-favs" style="display:none;">
@@ -509,7 +951,35 @@
         </div>
 
         <div class="player-wrap">
-          <iframe id="movie-frame" src="" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>
+          <iframe
+          id="movie-frame"
+          <div id="next-episode-overlay">
+
+  <div class="next-box">
+
+    <h3>Siguiente episodio</h3>
+
+    <p id="next-episode-text">
+      Reproduciendo automáticamente...
+    </p>
+
+    <button id="play-next-btn">
+      ▶ Ver ahora
+    </button>
+
+  </div>
+
+</div>
+  src=""
+  loading="lazy"
+  frameborder="0"
+  allowfullscreen
+  webkitallowfullscreen
+  mozallowfullscreen
+  allow="autoplay; fullscreen *; encrypted-media; picture-in-picture"
+  sandbox="allow-scripts allow-same-origin allow-presentation"
+  referrerpolicy="origin"
+></iframe>
         </div>
         <p class="player-note">Servidor PlayIMDb Activo · Si hay problemas, usa el botón ⛶ para pantalla completa.</p>
       </div>
@@ -521,7 +991,7 @@
     const API_KEY       = "3eea574ca84276b797d37e87d0d1983f";
     const API_BASE      = "https://api.themoviedb.org/3";
     const STREAM_MOVIE  = "https://www.playimdb.com/title/";
-    const STREAM_TV     = "https://www.playimdb.com/tv/";
+    const STREAM_TV = "https://www.playimdb.com/series/";
     const IMG_BASE      = "https://image.tmdb.org/t/p/w500";
     const IMG_LG        = "https://image.tmdb.org/t/p/w1280";
     const FAV_KEY       = "muzaflix_favs";
@@ -545,7 +1015,16 @@
     const selSeason     = document.getElementById("sel-season");
     const selEpisode    = document.getElementById("sel-episode");
     const tvLoadBtn     = document.getElementById("tv-load-btn");
+    const nextOverlay =
+  document.getElementById("next-episode-overlay");
 
+const nextBtn =
+  document.getElementById("play-next-btn");
+const heroPlayBtn =
+  document.getElementById("hero-play-btn");
+
+const heroInfoBtn =
+  document.getElementById("hero-info-btn");
     /* ─── FAVORITOS (localStorage) ──────────────────────── */
     function getFavs() {
       try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; }
@@ -584,7 +1063,44 @@
       car.innerHTML = "";
       favs.forEach((m, i) => car.appendChild(buildCard(m, i)));
     }
+/* ─── CONTINUAR VIENDO ───────────────────────── */
 
+function renderContinueWatching() {
+
+  const history =
+    JSON.parse(localStorage.getItem('muzaflix_continue_watching') || '[]');
+
+  const cwContainer =
+    document.getElementById('muzaflix-cw-container');
+
+  // Si no hay contenido, ocultar sección
+  if (!history.length) {
+    cwContainer.innerHTML = "";
+    return;
+  }
+
+  cwContainer.innerHTML = `
+    <div class="section-title">
+      ⏯️ Continuar Viendo
+    </div>
+
+    <div class="carousel" id="cw-carousel-list"></div>
+  `;
+
+  const listContainer =
+    document.getElementById('cw-carousel-list');
+
+  history
+    .slice()
+    .reverse()
+    .forEach((item, i) => {
+
+      const card = buildCard(item, i);
+
+      listContainer.appendChild(card);
+
+    });
+}
     /* ─── HELPERS DE CARGA ───────────────────────────────── */
     function renderSkeletons(container, count = 12) {
       container.innerHTML = "";
@@ -666,31 +1182,57 @@
       // Guardar en Continuar Viendo usando la lógica integrada
       if (typeof window.muzaflixTrackContinueWatching === 'function') {
         window.muzaflixTrackContinueWatching(item);
+        renderContinueWatching();
       }
 
       // Fetch detalle para obtener imdb_id y nro temporadas
       try {
-        const resDetail = await fetch(`${API_BASE}/${currentType}/${item.id}?api_key=${API_KEY}`);
-        const detail    = await resDetail.json();
-        currentImdbId   = detail.imdb_id || detail.external_ids?.imdb_id || null;
+     const resDetail = await fetch(
+  `${API_BASE}/${currentType}/${item.id}?api_key=${API_KEY}&language=es-MX`
+);
 
-        if (currentType === "tv") {
-          currentSeasons = detail.number_of_seasons || 1;
-          buildTVSelectors(currentSeasons);
-          tvSelectors.classList.add("visible");
-          // Carga por defecto T1E1
-          if (currentImdbId) loadTVEpisode();
-        } else {
-          if (currentImdbId) {
-            movieFrame.src = `${STREAM_MOVIE}${currentImdbId}/`;
-          }
-        }
+const detail = await resDetail.json();
+
+if (currentType === "movie") {
+
+  currentImdbId = detail.imdb_id || null;
+
+  if (currentImdbId) {
+    movieFrame.src = `${STREAM_MOVIE}${currentImdbId}/`;
+  }
+
+} else {
+
+  currentSeasons = detail.number_of_seasons || 1;
+
+  // 🔥 Obtener imdb_id REAL para series
+  const extRes = await fetch(
+    `${API_BASE}/tv/${item.id}/external_ids?api_key=${API_KEY}`
+  );
+
+  const extData = await extRes.json();
+
+  currentImdbId = extData.imdb_id || null;
+
+  buildTVSelectors(currentSeasons);
+
+  tvSelectors.classList.add("visible");
+
+  // Cargar automáticamente T1E1
+  if (currentImdbId) {
+    loadTVEpisode();
+  } else {
+    console.warn("Serie sin imdb_id");
+  }
+}
       } catch (err) {
         console.error("Error obteniendo detalles:", err);
       }
     }
 
     /* ─── SELECTORES TV ──────────────────────────────────── */
+    
+                  
     function buildTVSelectors(numSeasons) {
       selSeason.innerHTML = "";
       for (let s = 1; s <= numSeasons; s++) {
@@ -727,11 +1269,42 @@
     tvLoadBtn.addEventListener("click", () => { if (currentImdbId) loadTVEpisode(); });
 
     function loadTVEpisode() {
-      const s = selSeason.value  || 1;
-      const e = selEpisode.value || 1;
-      movieFrame.src = `${STREAM_TV}${currentImdbId}/${s}/${e}/`;
-    }
 
+  const s = Number(selSeason.value || 1);
+  const e = Number(selEpisode.value || 1);
+
+  // Forzar recarga limpia del iframe
+  movieFrame.src = "about:blank";
+
+  setTimeout(() => {
+
+    const url =
+      `${STREAM_TV}${currentImdbId}?season=${s}&episode=${e}`;
+
+    console.log("Cargando episodio:", url);
+
+    movieFrame.src = url;
+
+  }, 120);
+  startNextEpisodeCountdown();
+}
+/* ─── AUTO NEXT EPISODE ───────────────────── */
+
+let nextEpisodeTimer = null;
+
+function startNextEpisodeCountdown() {
+
+  if (currentType !== "tv") return;
+
+  clearTimeout(nextEpisodeTimer);
+
+  nextEpisodeTimer = setTimeout(() => {
+
+    nextOverlay.style.display = "flex";
+
+  }, 1000 * 60 * 40);
+
+}
     /* ─── CERRAR MODAL ───────────────────────────────────── */
     function closeModal() {
       if (modal.classList.contains("forced-fullscreen")) {
@@ -754,54 +1327,157 @@
     closeBtn.addEventListener("click", closeModal);
     backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
 
+nextBtn?.addEventListener("click", () => {
+
+  let season =
+    Number(selSeason.value);
+
+  let episode =
+    Number(selEpisode.value);
+
+  episode++;
+
+  if (episode > selEpisode.options.length) {
+
+    season++;
+    episode = 1;
+  }
+
+  if (season > selSeason.options.length) {
+
+    nextOverlay.style.display = "none";
+    return;
+  }
+
+  selSeason.value = season;
+
+  setTimeout(() => {
+
+    selEpisode.value = episode;
+
+    loadTVEpisode();
+
+    nextOverlay.style.display = "none";
+
+  }, 150);
+
+});
     /* ─── FAVORITOS ──────────────────────────────────────── */
     favBtn.addEventListener("click", () => {
       if (!currentItem) return;
       toggleFav(currentItem);
     });
 
-    /* ─── FULLSCREEN ─────────────────────────────────────── */
-    fsBtn.addEventListener("click", toggleCustomFullscreen);
+    /* ─── FULLSCREEN ────────────────────────────────
+    
+    heroPlayBtn?.addEventListener("click", () => {
 
-    function toggleCustomFullscreen() {
-      if (!modal.classList.contains("forced-fullscreen")) {
-        modal.classList.add("forced-fullscreen");
-        fsBtn.textContent = "✕";
-        // Intentar lock de orientación horizontal
-        try {
-          screen.orientation?.lock?.("landscape").catch(() => {});
-        } catch {}
-        // Push de estado para capturar gesto "atrás" en Android
-        history.pushState({ muzaflixFullscreen: true }, "");
-      } else {
-        modal.classList.remove("forced-fullscreen");
-        fsBtn.textContent = "⛶";
-        try { screen.orientation?.unlock?.(); } catch {}
+  if (heroItem)
+    openModal(heroItem);
+
+});
+
+heroInfoBtn?.addEventListener("click", () => {
+
+  if (heroItem)
+    openModal(heroItem);
+
+});tem);
+
+});
+    /* ─── FULLSCREEN ───────────────────────────── */
+
+fsBtn.addEventListener("click", toggleCustomFullscreen);
+
+async function toggleCustomFullscreen() {
+  const target = document.querySelector(".player-wrap");
+
+  try {
+    if (!document.fullscreenElement) {
+
+      if (target.requestFullscreen) {
+        await target.requestFullscreen();
+      } else if (target.webkitRequestFullscreen) {
+        target.webkitRequestFullscreen();
+      } else if (target.msRequestFullscreen) {
+        target.msRequestFullscreen();
       }
+
+      fsBtn.textContent = "✕";
+
+      try {
+        await screen.orientation?.lock?.("landscape");
+      } catch {}
+
+    } else {
+
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+
+      fsBtn.textContent = "⛶";
+
+      try {
+        screen.orientation?.unlock?.();
+      } catch {}
     }
+
+  } catch(err) {
+    console.warn("Fullscreen error:", err);
+  }
+}
+/* ─── ORIENTATION FIX PARA FULLSCREEN NATIVO ───────────────── */
+
+document.addEventListener("fullscreenchange", async () => {
+
+  const fsElement = document.fullscreenElement;
+
+  // Entró en fullscreen
+  if (fsElement) {
+
+    try {
+      await screen.orientation.lock("landscape");
+    } catch(err) {
+      console.warn("Orientation lock bloqueado:", err);
+    }
+
+  } else {
+
+    // Salió de fullscreen
+    try {
+      screen.orientation.unlock();
+    } catch(err) {}
+
+  }
+});
+
+
+/* Safari / Samsung */
+document.addEventListener("webkitfullscreenchange", async () => {
+
+  const fsElement = document.webkitFullscreenElement;
+
+  if (fsElement) {
+
+    try {
+      await screen.orientation.lock("landscape");
+    } catch(err) {}
+
+  } else {
+
+    try {
+      screen.orientation.unlock();
+    } catch(err) {}
+
+  }
+});
 
     /* ─── FIX CROSS-ORIGIN FULLSCREEN (IFRAME) ───────────── */
     // Chrome Android bloquea el fullscreen nativo del iframe. Interceptamos el evento
     // y lo redirigimos a nuestra implementación CSS.
-    document.addEventListener("fullscreenchange", () => {
-      // Si el iframe solicitó fullscreen y el browser se lo concedió, lo capturamos
-      if (document.fullscreenElement && document.fullscreenElement === movieFrame) {
-        try {
-          // Salir del fullscreen nativo que el iframe activó
-          document.exitFullscreen().catch(() => {});
-        } catch {}
-        // Activar nuestro fullscreen CSS + lock de orientación
-        if (!modal.classList.contains("forced-fullscreen")) {
-          toggleCustomFullscreen();
-        }
-      }
-      // Si se sale del fullscreen nativo (por esc o gesto), quitar también el nuestro
-      if (!document.fullscreenElement && modal.classList.contains("forced-fullscreen")) {
-        modal.classList.remove("forced-fullscreen");
-        fsBtn.textContent = "⛶";
-        try { screen.orientation?.unlock?.(); } catch {}
-      }
-    });
+    
 
     // Escuchar prefijos webkit para Safari/iOS
     document.addEventListener("webkitfullscreenchange", () => {
@@ -883,18 +1559,145 @@
       loadCarousel("carousel-tvtrending", "/trending/tv/week",     "tv");
     }
 
+/* ─── HERO DINÁMICO ───────────────────────── */
+
+let heroItem = null;
+
+async function loadHeroFeatured() {
+
+  try {
+
+    const res = await fetch(
+      `${API_BASE}/trending/all/week?api_key=${API_KEY}&language=es-MX`
+    );
+
+    const data = await res.json();
+
+    if (!data.results?.length) return;
+
+    // Elegir uno random del top 5
+    const featured =
+      data.results[Math.floor(Math.random() * 5)];
+
+    featured._type =
+      featured.media_type === "tv"
+        ? "tv"
+        : "movie";
+
+    heroItem = featured;
+
+    const hero =
+      document.getElementById("hero-featured");
+
+    hero.style.backgroundImage =
+      `url(${IMG_LG}${featured.backdrop_path})`;
+
+    document.getElementById("hero-title").textContent =
+      featured.title ||
+      featured.name ||
+      "Sin título";
+
+    document.getElementById("hero-description").textContent =
+      featured.overview ||
+      "Sin descripción disponible.";
+
+  } catch(err) {
+
+    console.error("Hero error:", err);
+
+  }
+}
+/* ─── LÓGICA DE PERFILES (UNIFICADA Y SEGURA) ─────────────────── */
+const profileScreen  = document.getElementById("profile-screen");
+const profileList    = document.getElementById("profile-list");
+const addProfileBtn  = document.getElementById("add-profile-btn");
+let currentProfile   = null;
+
+// Usamos una clave única y consistente para tu LocalStorage
+function getProfiles() {
+  return JSON.parse(localStorage.getItem("muzaflix_profiles") || "[]");
+}
+
+function saveProfiles(profiles) {
+  localStorage.setItem("muzaflix_profiles", JSON.stringify(profiles));
+}
+
+function renderProfiles() {
+  const profiles = getProfiles();
+  profileList.innerHTML = "";
+
+  profiles.forEach(profile => {
+    const card = document.createElement("div");
+    card.className = "profile-card";
+    
+    // Si no tiene avatar personalizado, le genera uno automático basado en su nombre
+    const avatarUrl = profile.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(profile.name)}`;
+
+    card.innerHTML = `
+      <img class="profile-avatar-img" src="${avatarUrl}" alt="${profile.name}" />
+      <div class="profile-name">${profile.name}</div>
+    `;
+
+    // Al hacer click, guardamos el perfil activo y ocultamos la pantalla
+    card.onclick = () => {
+      currentProfile = profile.name;
+      localStorage.setItem("muzaflix_current_profile", currentProfile);
+      profileScreen.style.display = "none";
+    };
+
+    profileList.appendChild(card);
+  });
+}
+
+// Escuchamos el click del botón SOLO si el navegador ya lo encontró en el DOM
+if (addProfileBtn) {
+  addProfileBtn.onclick = () => {
+    const name = prompt("Nombre del nuevo perfil:");
+    if (!name) return;
+
+    const profiles = getProfiles();
+    profiles.push({ 
+      name: name,
+      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
+    });
+
+    saveProfiles(profiles);
+    renderProfiles(); // Recargamos la lista en pantalla
+  };
+}
+
+function initProfiles() {
+  renderProfiles();
+  
+  const saved = localStorage.getItem("muzaflix_current_profile");
+  if (saved) {
+    currentProfile = saved;
+    profileScreen.style.display = "none";
+  } else {
+    profileScreen.style.display = "flex";
+  }
+}
+
+// Al final de todo tu script, donde llamás a las funciones iniciales:
+initProfiles();
+
     /* ─── INICIO ─────────────────────────────────────────── */
     async function init() {
       renderFavs();
+      renderContinueWatching();
       await Promise.all([
         loadCarousel("carousel-popular",    "/movie/popular",        "movie"),
         loadCarousel("carousel-nowplaying", "/movie/now_playing",    "movie"),
         loadCarousel("carousel-tvtrending", "/trending/tv/week",     "tv"),
       ]);
     }
-
-    init();
-
+    initProfiles();
+init();
+loadHeroFeatured();
+// Cambiar hero automáticamente cada 30 segundos
+setInterval(() => {
+  loadHeroFeatured();
+}, 10000);
     /* ─── PWA ────────────────────────────────────────────── */
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js").catch(err => console.log("SW:", err));
@@ -913,6 +1716,57 @@
       }
     });
     window.addEventListener("appinstalled", () => { installBtn.style.display = "none"; });
+    const avatarUpload =
+  document.getElementById("avatar-upload");
+
+const customAvatarPreview =
+  document.getElementById("custom-avatar-preview");
+
+avatarUpload?.addEventListener("change", e => {
+
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = ev => {
+
+    const image = ev.target.result;
+
+    customAvatarPreview.src = image;
+
+    localStorage.setItem(
+      "muzaflix_custom_avatar",
+      image
+    );
+  };
+
+  reader.readAsDataURL(file);
+});
+
+const savedAvatar =
+  localStorage.getItem("muzaflix_custom_avatar");
+
+if (savedAvatar) {
+
+  customAvatarPreview.src = savedAvatar;
+}
+/* ─── CAMBIAR PERFIL ───────────────────── */
+
+const switchProfileBtn =
+  document.getElementById("switch-profile-btn");
+
+switchProfileBtn?.addEventListener("click", (e) => {
+
+  e.preventDefault();
+
+  // mostrar pantalla de perfiles otra vez
+  document.getElementById("profile-screen").style.display = "flex";
+});
+
+
+
   </script>
 
   <script>
@@ -1088,43 +1942,16 @@
         if (!item || !item.id) return;
         let history = JSON.parse(localStorage.getItem('muzaflix_continue_watching') || '[]');
         history = history.filter(h => h.id !== item.id); // Filtrar duplicados por ID tracker
-        history.push(item);
+        history = history.filter(h => h.id !== item.id);
+
+history.push(item);;
         if (history.length > 7) history = history.slice(-7); // Aumentado a 7 items de buffer
         localStorage.setItem('muzaflix_continue_watching', JSON.stringify(history));
       };
 
     })();
     // ⛶ Fullscreen Multiplataforma (Android/iOS/Win/Mac)
-const muzaflixFullscreen = (() => {
-  return {
-    toggle(targetEl) {
-      const el = targetEl || document.querySelector('video') || document.documentElement;
-      const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-      const method = isFS ? 'exitFullscreen' : 'requestFullscreen';
-      const obj = isFS ? document : el;
-      const fn = obj[method] || 
-                 obj['webkit' + method.charAt(0).toUpperCase() + method.slice(1)] || 
-                 obj['moz' + method.charAt(0).toUpperCase() + method.slice(1)] || 
-                 obj['ms' + method.charAt(0).toUpperCase() + method.slice(1)];
-      if (fn) fn.call(obj).catch(err => console.warn('📱 Fullscreen bloqueado:', err.message));
-    }
-  };
-})();
 
-// Vinculación segura al botón ⛶
-document.addEventListener('DOMContentLoaded', () => {
-  const fsBtn = document.querySelector('[aria-label="Pantalla completa"], .fullscreen-btn, #btn-fullscreen') || 
-                [...document.querySelectorAll('button, span, div')].find(el => el.textContent.trim().includes('⛶'));
-                
-  if (fsBtn) {
-    fsBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation(); // ⚠️ Crítico en Android: evita que otros handlers interfieran
-      const video = document.querySelector('video') || document.querySelector('[data-player]');
-      muzaflixFullscreen.toggle(video);
-    });
-  }
-});
   </script>
 </body>
 </html>
