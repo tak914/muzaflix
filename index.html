@@ -4,33 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Muzaflix</title>
-  
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#00ff66">
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <style>
-    /* ─── RESET & VARIABLES VERDES ──────────────────────── */
+    /* ─── RESET & VARIABLES ──────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #050705;
-      --surface:   #0d110d;
-      --border:    rgba(0,255,102,0.08);
-      --accent:    #00ff66;
-      --accent2:   #00b3ff;
-      --gold:      #f5c518;
-      --text:      #e2eee2;
-      --muted:     #668872;
-      --glass-bg:  rgba(5,10,6,0.8);
+      --bg:           #050705;
+      --surface:      #0d110d;
+      --border:       rgba(0,255,102,0.08);
+      --accent:       #00ff66;
+      --accent2:      #00b3ff;
+      --gold:         #f5c518;
+      --text:         #e2eee2;
+      --muted:        #668872;
+      --glass-bg:     rgba(5,10,6,0.88);
       --glass-border: rgba(0,255,102,0.15);
-      --card-w:    200px;
+      --card-w:       160px;
     }
 
     html { scroll-behavior: smooth; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -40,21 +37,20 @@
       overflow-x: hidden;
     }
 
-    /* ─── EFECTO DE RUIDO DISCRETO ──────────────────────── */
+    /* Ruido discreto */
     body::before {
       content: '';
       position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 9999;
-      opacity: 0.25;
+      pointer-events: none; z-index: 9999; opacity: 0.25;
     }
 
-    /* ─── SCROLLBAR VERDE ───────────────────────────────── */
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: #00ff66; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
 
-    /* ─── HEADER ────────────────────────────────────────── */
+    /* ─── HEADER ─────────────────────────────────── */
     header {
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
@@ -63,129 +59,243 @@
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
     }
-
     .logo {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.2rem;
-      letter-spacing: 2px;
+      font-size: 2.2rem; letter-spacing: 2px;
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       user-select: none;
     }
-
     #pwa-install-btn {
-      background: rgba(0, 255, 102, 0.1);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      display: none;
-      margin-right: 15px;
-      transition: background 0.2s;
+      background: rgba(0,255,102,0.1); border: 1px solid var(--accent);
+      color: var(--accent); padding: 6px 14px; border-radius: 6px;
+      font-size: 0.8rem; font-weight: 500; cursor: pointer; display: none;
+      margin-right: 15px; transition: background 0.2s;
     }
     #pwa-install-btn:hover { background: var(--accent); color: #000; }
 
     .search-wrap { position: relative; display: flex; align-items: center; flex: 0 1 340px; }
     .search-wrap svg { position: absolute; left: 14px; width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
     #search {
-      width: 100%; background: rgba(0,255,102,0.03); border: 1px solid var(--border); border-radius: 8px;
-      padding: 9px 14px 9px 40px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none;
+      width: 100%; background: rgba(0,255,102,0.03); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 14px 9px 40px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none;
     }
     #search:focus { border-color: var(--accent); background: rgba(0,255,102,0.07); }
-    #search:focus ~ svg { color: var(--accent); }
 
-    /* ─── HERO STRIP ─────────────────────────────────────── */
+    /* ─── HERO ───────────────────────────────────── */
     .hero { padding: 56px 40px 0; display: flex; align-items: flex-end; gap: 4px; }
-    .hero-label { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: 2px; color: #fff; }
-    .hero-label em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: 2px; color: #fff;
+    }
+    .hero-label em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
     .hero-sub { padding: 10px 40px 32px; color: var(--muted); font-size: 0.875rem; }
 
-    /* ─── SECTION ────────────────────────────────────────── */
-    .section { padding: 0 40px 60px; }
-    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 2px; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
-    .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+    /* ─── SECTIONS (carruseles) ───────────────────── */
+    .section { padding: 0 0 48px; }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+      letter-spacing: 2px; color: #fff; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 40px;
+    }
+    .section-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
 
-    /* ─── GRID & CARDS ───────────────────────────────────── */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-w), 1fr)); gap: 18px; }
+    /* ─── CARRUSEL ───────────────────────────────── */
+    .carousel {
+      display: flex; gap: 14px; overflow-x: auto; overflow-y: visible;
+      padding: 8px 40px 16px; scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+    }
+    .carousel::-webkit-scrollbar { height: 3px; }
+    .carousel::-webkit-scrollbar-thumb { background: rgba(0,255,102,0.3); }
+
+    /* ─── CARD ───────────────────────────────────── */
     .card {
-      position: relative; width: 100%; aspect-ratio: 2/3; border-radius: 10px; overflow: hidden;
-      cursor: pointer; border: 1px solid var(--border); background: var(--surface);
-      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      flex: 0 0 var(--card-w); width: var(--card-w);
+      aspect-ratio: 2/3; border-radius: 10px; overflow: hidden;
+      cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface); position: relative;
+      scroll-snap-align: start;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s;
       animation: fadeSlide 0.5s ease both;
     }
-    @keyframes fadeSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .card:hover { transform: scale(1.05) translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.8); border-color: var(--accent); }
-    .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; }
-    .card-title { font-size: 0.8rem; font-weight: 500; color: #fff; margin-bottom: 6px; }
-    .card-meta { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: var(--muted); }
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .card:hover { transform: scale(1.07) translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.8); border-color: var(--accent); }
+    .card img { width:100%; height:100%; object-fit:cover; display:block; }
+    .card-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+      display: flex; flex-direction: column; justify-content: flex-end; padding: 12px;
+    }
+    .card-title { font-size: 0.75rem; font-weight: 500; color: #fff; margin-bottom: 4px; line-height:1.3; }
+    .card-meta { display:flex; align-items:center; gap:6px; font-size:0.65rem; color:var(--muted); }
     .card-rating { color: var(--gold); font-weight: 500; }
-    
+    .card-type-badge {
+      position: absolute; top: 8px; left: 8px; padding: 2px 7px;
+      background: rgba(0,179,255,0.85); border-radius: 4px;
+      font-size: 0.6rem; font-weight: 500; color: #000; letter-spacing: 1px;
+    }
     .play-btn {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 44px; height: 44px; background: rgba(0, 255, 102, 0.9); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 44px; height: 44px; background: rgba(0,255,102,0.9); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.25s;
     }
     .card:hover .play-btn { opacity: 1; }
-    .play-btn svg { width: 18px; height: 18px; fill: #000; margin-left: 3px; }
+    .play-btn svg { width:18px; height:18px; fill:#000; margin-left:3px; }
 
-    /* ─── SKELETON ───────────────────────────────────────── */
-    .skeleton { background: var(--surface); border-radius: 10px; aspect-ratio: 2/3; position: relative; overflow: hidden; border: 1px solid var(--border); }
-    .skeleton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(0,255,102,0.03), transparent); animation: shimmer 1.5s infinite; }
-    @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+    /* ─── SKELETON ───────────────────────────────── */
+    .skeleton {
+      flex: 0 0 var(--card-w); aspect-ratio: 2/3; border-radius: 10px;
+      background: var(--surface); position: relative; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .skeleton::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,255,102,0.04), transparent);
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { from { transform:translateX(-100%); } to { transform:translateX(100%); } }
 
-    /* ─── MODAL MULTIMEDIA ─────────────────────────── */
-    #modal-backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    /* ─── MODAL ──────────────────────────────────── */
+    #modal-backdrop {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
     #modal-backdrop.open { opacity: 1; pointer-events: all; }
 
-    #modal { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; width: 100%; max-width: 960px; max-height: 90vh; overflow-y: auto; box-shadow: 0 40px 100px rgba(0,0,0,0.9); transition: transform 0.3s ease; }
-    .modal-header { position: relative; height: 320px; overflow: hidden; }
-    #modal-backdrop-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
-    .modal-header-gradient { position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(to top, var(--bg), transparent); }
-    .modal-header-content { position: absolute; bottom: 24px; left: 28px; right: 28px; }
-    #modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: #fff; }
-    
-    .modal-tags { display: flex; gap: 8px; margin-top: 10px; }
-    .modal-tag { padding: 3px 10px; border-radius: 4px; font-size: 0.7rem; background: rgba(0,255,102,0.08); border: 1px solid rgba(0,255,102,0.2); color: #fff; }
-    .modal-tag.year { color: var(--accent); }
+    #modal {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 16px; width: 100%; max-width: 960px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.9);
+      transition: transform 0.3s ease;
+    }
+    .modal-header { position: relative; height: 300px; overflow: hidden; }
+    #modal-backdrop-img { width:100%; height:100%; object-fit:cover; filter:brightness(0.4); }
+    .modal-header-gradient { position:absolute; bottom:0; left:0; right:0; height:60%; background:linear-gradient(to top, var(--bg), transparent); }
+    .modal-header-content { position:absolute; bottom:22px; left:28px; right:28px; }
+    #modal-title { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; color:#fff; }
 
-    #close-btn { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 12; }
-    #close-btn:hover { background: #ff3333; }
-    
-    #fullscreen-btn { position: absolute; top: 16px; right: 64px; width: 36px; height: 36px; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-radius: 50%; color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 12; font-size: 1rem; }
-    #fullscreen-btn:hover { background: var(--accent); color: #000; }
+    .modal-tags { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+    .modal-tag { padding:3px 10px; border-radius:4px; font-size:0.7rem; background:rgba(0,255,102,0.08); border:1px solid rgba(0,255,102,0.2); color:#fff; }
+    .modal-tag.year { color:var(--accent); }
+    .modal-tag.tv { color:var(--accent2); border-color:var(--accent2); background:rgba(0,179,255,0.08); }
 
-    .modal-body { padding: 24px 28px; }
-    #modal-overview { font-size: 0.92rem; line-height: 1.7; color: #ccc; margin-bottom: 24px; }
+    #close-btn {
+      position:absolute; top:16px; right:16px; width:36px; height:36px;
+      background:rgba(0,0,0,0.6); border:1px solid var(--glass-border);
+      border-radius:50%; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:12;
+    }
+    #close-btn:hover { background:#ff3333; }
+    #fullscreen-btn {
+      position:absolute; top:16px; right:64px; width:36px; height:36px;
+      background:rgba(0,0,0,0.6); border:1px solid var(--glass-border);
+      border-radius:50%; color:var(--accent); cursor:pointer;
+      display:flex; align-items:center; justify-content:center; z-index:12; font-size:1rem;
+    }
+    #fullscreen-btn:hover { background:var(--accent); color:#000; }
 
-    /* REPRODUCTOR */
-    .player-wrap { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; border: 1px solid var(--border); }
-    #movie-frame { width: 100%; height: 100%; border: none; display: block; }
-    .player-note { margin-top: 10px; font-size: 0.72rem; color: var(--muted); text-align: center; }
+    .modal-body { padding: 22px 28px; }
+    #modal-overview { font-size:0.9rem; line-height:1.7; color:#ccc; margin-bottom:20px; }
 
-    /* ─── MODAL COMPLETO APALASADO (HACK CSS) ───────────── */
-    #modal.forced-fullscreen { position: fixed !important; inset: 0 !important; width: 100vw !important; max-width: 100vw !important; height: 100vh !important; max-height: 100vh !important; border-radius: 0 !important; z-index: 9999 !important; }
-    #modal.forced-fullscreen .modal-header, #modal.forced-fullscreen #modal-overview, #modal.forced-fullscreen .player-note { display: none !important; }
-    #modal.forced-fullscreen .modal-body { padding: 0 !important; height: 100vh !important; }
-    #modal.forced-fullscreen .player-wrap { width: 100vw !important; height: 100vh !important; border-radius: 0 !important; border: none !important; }
+    /* ─── SELECTORES TV ──────────────────────────── */
+    #tv-selectors {
+      display: none; gap: 14px; margin-bottom: 18px; align-items: center; flex-wrap: wrap;
+    }
+    #tv-selectors.visible { display: flex; }
+    .tv-select-wrap { display:flex; flex-direction:column; gap:5px; }
+    .tv-select-wrap label { font-size:0.72rem; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+    .tv-select {
+      background: rgba(0,255,102,0.05); border: 1px solid var(--glass-border);
+      color: var(--text); border-radius:7px; padding: 8px 14px;
+      font-family: 'DM Sans', sans-serif; font-size:0.85rem; outline:none; cursor:pointer;
+      appearance: none; min-width: 120px;
+    }
+    .tv-select:focus { border-color: var(--accent); }
+    .tv-load-btn {
+      background: var(--accent); color:#000; border:none; border-radius:7px;
+      padding: 9px 20px; font-family:'DM Sans',sans-serif; font-weight:500;
+      font-size:0.85rem; cursor:pointer; margin-top:20px; transition:opacity 0.2s;
+    }
+    .tv-load-btn:hover { opacity:0.85; }
 
-    @media (max-width: 600px) { header { padding: 0 16px; } :root { --card-w: 140px; } .modal-header { height: 220px; } }
+    /* ─── FAVORITOS BOTÓN ────────────────────────── */
+    .fav-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      background: rgba(245,197,24,0.08); border:1px solid rgba(245,197,24,0.3);
+      color: var(--gold); border-radius:8px; padding:8px 16px;
+      font-family:'DM Sans',sans-serif; font-size:0.82rem; cursor:pointer;
+      transition: background 0.2s, color 0.2s; margin-bottom:18px;
+    }
+    .fav-btn:hover, .fav-btn.active { background:var(--gold); color:#000; }
+    .fav-btn svg { width:15px; height:15px; }
+
+    /* ─── REPRODUCTOR ────────────────────────────── */
+    .player-wrap {
+      position:relative; width:100%; aspect-ratio:16/9; border-radius:10px;
+      overflow:hidden; background:#000; border:1px solid var(--border);
+    }
+    #movie-frame { width:100%; height:100%; border:none; display:block; }
+    .player-note { margin-top:8px; font-size:0.72rem; color:var(--muted); text-align:center; }
+
+    /* ─── FULLSCREEN FORZADO ─────────────────────── */
+    #modal.forced-fullscreen {
+      position:fixed !important; inset:0 !important;
+      width:100vw !important; max-width:100vw !important;
+      height:100vh !important; max-height:100vh !important;
+      border-radius:0 !important; z-index:9999 !important;
+    }
+    #modal.forced-fullscreen .modal-header,
+    #modal.forced-fullscreen #modal-overview,
+    #modal.forced-fullscreen #tv-selectors,
+    #modal.forced-fullscreen .fav-btn,
+    #modal.forced-fullscreen .player-note { display:none !important; }
+    #modal.forced-fullscreen .modal-body { padding:0 !important; height:100vh !important; }
+    #modal.forced-fullscreen .player-wrap {
+      width:100vw !important; height:100vh !important;
+      border-radius:0 !important; border:none !important;
+    }
+
+    /* ─── SEARCH OVERLAY ─────────────────────────── */
+    #search-results { padding: 0 40px 60px; }
+    #search-results .grid-search {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--card-w), 1fr));
+      gap: 14px;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      :root { --card-w: 130px; }
+      .hero, .hero-sub, .section-title { padding-left: 16px; padding-right: 16px; }
+      .carousel { padding-left: 16px; padding-right: 16px; }
+      .modal-header { height: 220px; }
+      .modal-body { padding: 18px 16px; }
+      #modal-title { font-size: 1.8rem; }
+    }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">Muza<span>flix</span></div>
-    <div style="display: flex; align-items: center;">
+    <div style="display:flex;align-items:center;">
       <button id="pwa-install-btn">Instalar Muzaflix 📲</button>
       <div class="search-wrap">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="search" placeholder="Buscar película…" autocomplete="off" />
+        <input type="text" id="search" placeholder="Buscar película o serie…" autocomplete="off" />
       </div>
     </div>
   </header>
@@ -193,13 +303,42 @@
   <div class="hero">
     <h1 class="hero-label">En <em>Muzaflix</em></h1>
   </div>
-  <p class="hero-sub">El catálogo definitivo en color neón · Conexión PlayIMDb automatizada</p>
+  <p class="hero-sub">Catálogo definitivo · PlayIMDb · Netflix-style · Multi-categoría</p>
 
-  <section class="section">
-    <div class="section-title">Populares Ahora</div>
-    <div class="grid" id="grid"></div>
-  </section>
+  <!-- Resultados de búsqueda (oculto por defecto) -->
+  <div id="search-results" style="display:none;">
+    <div class="section-title" id="search-label">Resultados</div>
+    <div class="grid-search" id="search-grid"></div>
+  </div>
 
+  <!-- Catálogo principal -->
+  <div id="catalog">
+    <!-- Mi Lista -->
+    <div class="section" id="section-favs" style="display:none;">
+      <div class="section-title">⭐ Mi Lista</div>
+      <div class="carousel" id="carousel-favs"></div>
+    </div>
+
+    <!-- Populares -->
+    <div class="section">
+      <div class="section-title">🔥 Populares Ahora</div>
+      <div class="carousel" id="carousel-popular"></div>
+    </div>
+
+    <!-- Últimos Estrenos -->
+    <div class="section">
+      <div class="section-title">🎬 Últimos Estrenos</div>
+      <div class="carousel" id="carousel-nowplaying"></div>
+    </div>
+
+    <!-- Series en Tendencia -->
+    <div class="section">
+      <div class="section-title">📺 Series en Tendencia</div>
+      <div class="carousel" id="carousel-tvtrending"></div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
   <div id="modal-backdrop" role="dialog" aria-modal="true">
     <div id="modal">
       <div class="modal-header">
@@ -214,192 +353,414 @@
       </div>
       <div class="modal-body">
         <p id="modal-overview"></p>
-        <div class="player-wrap">
-          <iframe id="movie-frame" src="" allowfullscreen allow="fullscreen" loading="lazy"></iframe>
+
+        <!-- Botón favoritos -->
+        <button class="fav-btn" id="fav-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span id="fav-btn-text">Añadir a Mi Lista</span>
+        </button>
+
+        <!-- Selectores TV -->
+        <div id="tv-selectors">
+          <div class="tv-select-wrap">
+            <label>Temporada</label>
+            <select id="sel-season" class="tv-select"></select>
+          </div>
+          <div class="tv-select-wrap">
+            <label>Episodio</label>
+            <select id="sel-episode" class="tv-select"></select>
+          </div>
+          <button class="tv-load-btn" id="tv-load-btn">▶ Cargar Episodio</button>
         </div>
-        <p class="player-note">Servidor PlayIMDb Activo. Si hay problemas de rotación, usa nuestro botón ⛶.</p>
+
+        <div class="player-wrap">
+          <iframe id="movie-frame" src="" allowfullscreen allow="autoplay; fullscreen" loading="lazy"></iframe>
+        </div>
+        <p class="player-note">Servidor PlayIMDb Activo · Si hay problemas, usa el botón ⛶ para pantalla completa.</p>
       </div>
     </div>
   </div>
 
   <script>
-    const API_KEY       = "3eea574ca84276b797d37e87d0d1983f";          
-    const STREAM_SERVER = "https://www.playimdb.com/title/"; 
-    const IMG_BASE      = "https://image.tmdb.org/t/p/w500";
-    const IMG_BASE_LG   = "https://image.tmdb.org/t/p/w1280";
+    /* ─── CONSTANTES ────────────────────────────────────── */
+    const API_KEY       = "3eea574ca84276b797d37e87d0d1983f";
     const API_BASE      = "https://api.themoviedb.org/3";
+    const STREAM_MOVIE  = "https://www.playimdb.com/title/";
+    const STREAM_TV     = "https://www.playimdb.com/tv/";
+    const IMG_BASE      = "https://image.tmdb.org/t/p/w500";
+    const IMG_LG        = "https://image.tmdb.org/t/p/w1280";
+    const FAV_KEY       = "muzaflix_favs";
 
-    let allMovies  = [];
-    let displayed  = [];
+    /* ─── STATE ──────────────────────────────────────────── */
+    let currentItem     = null;  // objeto completo del item abierto
+    let currentImdbId   = null;
+    let currentType     = null;  // 'movie' | 'tv'
+    let currentSeasons  = 1;
 
-    const grid       = document.getElementById("grid");
-    const backdrop   = document.getElementById("modal-backdrop");
-    const closeBtn   = document.getElementById("close-btn");
-    const fsBtn      = document.getElementById("fullscreen-btn");
-    const searchEl   = document.getElementById("search");
-    const movieFrame = document.getElementById("movie-frame");
+    /* ─── DOM REFS ───────────────────────────────────────── */
+    const backdrop      = document.getElementById("modal-backdrop");
+    const modal         = document.getElementById("modal");
+    const closeBtn      = document.getElementById("close-btn");
+    const fsBtn         = document.getElementById("fullscreen-btn");
+    const searchEl      = document.getElementById("search");
+    const movieFrame    = document.getElementById("movie-frame");
+    const favBtn        = document.getElementById("fav-btn");
+    const favBtnText    = document.getElementById("fav-btn-text");
+    const tvSelectors   = document.getElementById("tv-selectors");
+    const selSeason     = document.getElementById("sel-season");
+    const selEpisode    = document.getElementById("sel-episode");
+    const tvLoadBtn     = document.getElementById("tv-load-btn");
 
-    /* ─── API TMDb CATALOGO ─────────────────────────────── */
-    async function loadMovies() {
-      renderSkeletons(20);
-      try {
-        const url = `${API_BASE}/movie/popular?api_key=${API_KEY}&language=es-MX`;
-        const res = await fetch(url);
-        const data = await res.json();
-        allMovies = data.results.slice(0, 20);
-        displayed = allMovies;
-        renderGrid(displayed);
-      } catch (err) {
-        grid.innerHTML = `<div class="state-msg"><h3>Error al conectar</h3></div>`;
+    /* ─── FAVORITOS (localStorage) ──────────────────────── */
+    function getFavs() {
+      try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; }
+      catch { return []; }
+    }
+    function saveFavs(favs) {
+      try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }
+      catch (e) { console.error("Error guardando favoritos:", e); }
+    }
+    function isFav(id) { return getFavs().some(f => f.id === id); }
+    function toggleFav(item) {
+      let favs = getFavs();
+      const idx = favs.findIndex(f => f.id === item.id);
+      if (idx === -1) {
+        favs.unshift(item);
+      } else {
+        favs.splice(idx, 1);
+      }
+      saveFavs(favs);
+      updateFavBtn(item);
+      renderFavs();
+    }
+    function updateFavBtn(item) {
+      const active = isFav(item.id);
+      favBtn.classList.toggle("active", active);
+      favBtnText.textContent = active ? "Quitar de Mi Lista" : "Añadir a Mi Lista";
+    }
+
+    /* ─── RENDER DE FAVORITOS ────────────────────────────── */
+    function renderFavs() {
+      const favs = getFavs();
+      const sec  = document.getElementById("section-favs");
+      const car  = document.getElementById("carousel-favs");
+      if (favs.length === 0) { sec.style.display = "none"; return; }
+      sec.style.display = "";
+      car.innerHTML = "";
+      favs.forEach((m, i) => car.appendChild(buildCard(m, i)));
+    }
+
+    /* ─── HELPERS DE CARGA ───────────────────────────────── */
+    function renderSkeletons(container, count = 12) {
+      container.innerHTML = "";
+      for (let i = 0; i < count; i++) {
+        const sk = document.createElement("div");
+        sk.className = "skeleton";
+        container.appendChild(sk);
       }
     }
 
-    function renderGrid(movies) {
-      grid.innerHTML = "";
-      movies.forEach((m, i) => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.style.animationDelay = `${i * 0.04}s`;
-        const posterUrl = m.poster_path ? `${IMG_BASE}${m.poster_path}` : null;
-        const year = m.release_date ? m.release_date.slice(0, 4) : "–";
-        const rating = m.vote_average ? m.vote_average.toFixed(1) : "–";
+    function buildCard(m, i) {
+      const card      = document.createElement("div");
+      card.className  = "card";
+      card.style.animationDelay = `${i * 0.04}s`;
 
-        card.innerHTML = `
-          ${posterUrl ? `<img src="${posterUrl}" alt="${m.title}" loading="lazy"/>` : `<div class="no-poster"><span>Sin Póster</span></div>`}
-          <div class="card-overlay">
-            <div class="card-title">${m.title}</div>
-            <div class="card-meta"><span class="card-rating">★ ${rating}</span><span>• ${year}</span></div>
-          </div>
-          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-        `;
-        card.addEventListener("click", () => openModal(m));
-        grid.appendChild(card);
-      });
+      const isTV      = m._type === "tv";
+      const title     = m.title || m.name || "Sin título";
+      const poster    = m.poster_path ? `${IMG_BASE}${m.poster_path}` : null;
+      const year      = (m.release_date || m.first_air_date || "").slice(0, 4) || "–";
+      const rating    = m.vote_average ? m.vote_average.toFixed(1) : "–";
+
+      card.innerHTML = `
+        ${poster ? `<img src="${poster}" alt="${title}" loading="lazy"/>` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.75rem;">Sin Póster</div>`}
+        ${isTV ? `<div class="card-type-badge">SERIE</div>` : ""}
+        <div class="card-overlay">
+          <div class="card-title">${title}</div>
+          <div class="card-meta"><span class="card-rating">★ ${rating}</span><span>• ${year}</span></div>
+        </div>
+        <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      `;
+      card.addEventListener("click", () => openModal(m));
+      return card;
     }
 
-    /* ─── CAPTURAR tt DE IMDB DINÁMICAMENTE ─────────────── */
-    async function openModal(movie) {
-      document.getElementById("modal-title").textContent = movie.title;
-      document.getElementById("modal-overview").textContent = movie.overview || "Sin sinopsis.";
-      document.getElementById("modal-backdrop-img").src = movie.backdrop_path ? `${IMG_BASE_LG}${movie.backdrop_path}` : '';
-      
-      const tagsContainer = document.getElementById("modal-tags");
-      tagsContainer.innerHTML = `<span class="modal-tag year">${movie.release_date ? movie.release_date.slice(0, 4) : '–'}</span><span class="modal-tag">★ ${movie.vote_average.toFixed(1)}</span>`;
+    async function loadCarousel(carouselId, endpoint, type = "movie") {
+      const container = document.getElementById(carouselId);
+      renderSkeletons(container);
+      try {
+        const res  = await fetch(`${API_BASE}${endpoint}?api_key=${API_KEY}&language=es-MX`);
+        const data = await res.json();
+        const items = (data.results || []).slice(0, 20).map(m => ({ ...m, _type: type }));
+        container.innerHTML = "";
+        items.forEach((m, i) => container.appendChild(buildCard(m, i)));
+      } catch (err) {
+        container.innerHTML = `<div style="color:var(--muted);padding:20px;font-size:0.85rem;">Error al cargar · ${err.message}</div>`;
+      }
+    }
+
+    /* ─── ABRIR MODAL ────────────────────────────────────── */
+    async function openModal(item) {
+      currentItem = item;
+      currentType = item._type || "movie";
+
+      const title   = item.title || item.name || "Sin título";
+      const year    = (item.release_date || item.first_air_date || "").slice(0, 4) || "–";
+      const rating  = item.vote_average ? item.vote_average.toFixed(1) : "–";
+
+      document.getElementById("modal-title").textContent     = title;
+      document.getElementById("modal-overview").textContent  = item.overview || "Sin sinopsis disponible.";
+      document.getElementById("modal-backdrop-img").src      = item.backdrop_path ? `${IMG_LG}${item.backdrop_path}` : "";
+
+      const tagsEl = document.getElementById("modal-tags");
+      tagsEl.innerHTML = `
+        <span class="modal-tag year">${year}</span>
+        <span class="modal-tag">★ ${rating}</span>
+        ${currentType === "tv" ? `<span class="modal-tag tv">SERIE</span>` : ""}
+      `;
+
+      // Reset
+      movieFrame.src = "";
+      tvSelectors.classList.remove("visible");
+      currentImdbId  = null;
+      currentSeasons = 1;
+      updateFavBtn(item);
 
       backdrop.classList.add("open");
       document.body.style.overflow = "hidden";
 
+      // Fetch detalle para obtener imdb_id y nro temporadas
       try {
-        const resDetail = await fetch(`${API_BASE}/movie/${movie.id}?api_key=${API_KEY}`);
-        const movieData = await resDetail.json();
-        if (movieData.imdb_id) {
-          movieFrame.src = `${STREAM_SERVER}${movieData.imdb_id}/`;
+        const resDetail = await fetch(`${API_BASE}/${currentType}/${item.id}?api_key=${API_KEY}`);
+        const detail    = await resDetail.json();
+        currentImdbId   = detail.imdb_id || detail.external_ids?.imdb_id || null;
+
+        if (currentType === "tv") {
+          currentSeasons = detail.number_of_seasons || 1;
+          buildTVSelectors(currentSeasons);
+          tvSelectors.classList.add("visible");
+          // Carga por defecto T1E1
+          if (currentImdbId) loadTVEpisode();
         } else {
-          movieFrame.src = "";
+          if (currentImdbId) {
+            movieFrame.src = `${STREAM_MOVIE}${currentImdbId}/`;
+          }
         }
-      } catch (err) { console.error(err); }
+      } catch (err) {
+        console.error("Error obteniendo detalles:", err);
+      }
     }
 
-    function closeModal() {
-      const modal = document.getElementById("modal");
-      if (modal.classList.contains("forced-fullscreen")) {
-        // Si el usuario cierra el modal estando maximizado, limpiamos el historial
-        history.back();
+    /* ─── SELECTORES TV ──────────────────────────────────── */
+    function buildTVSelectors(numSeasons) {
+      selSeason.innerHTML = "";
+      for (let s = 1; s <= numSeasons; s++) {
+        const opt = document.createElement("option");
+        opt.value = s; opt.textContent = `Temporada ${s}`;
+        selSeason.appendChild(opt);
       }
+      buildEpisodeOptions();
+    }
+
+    function buildEpisodeOptions(count = 20) {
+      selEpisode.innerHTML = "";
+      for (let e = 1; e <= count; e++) {
+        const opt = document.createElement("option");
+        opt.value = e; opt.textContent = `Episodio ${e}`;
+        selEpisode.appendChild(opt);
+      }
+    }
+
+    // Cuando cambia temporada, recarga opciones de episodio dinámicamente
+    selSeason.addEventListener("change", async () => {
+      if (!currentItem || currentType !== "tv") return;
+      try {
+        const season = selSeason.value;
+        const res    = await fetch(`${API_BASE}/tv/${currentItem.id}/season/${season}?api_key=${API_KEY}`);
+        const data   = await res.json();
+        const count  = (data.episodes || []).length || 20;
+        buildEpisodeOptions(count);
+      } catch {
+        buildEpisodeOptions(20);
+      }
+    });
+
+    tvLoadBtn.addEventListener("click", () => { if (currentImdbId) loadTVEpisode(); });
+
+    function loadTVEpisode() {
+      const s = selSeason.value  || 1;
+      const e = selEpisode.value || 1;
+      movieFrame.src = `${STREAM_TV}${currentImdbId}/${s}/${e}/`;
+    }
+
+    /* ─── CERRAR MODAL ───────────────────────────────────── */
+    function closeModal() {
+      if (modal.classList.contains("forced-fullscreen")) {
+        history.back();
+        return;
+      }
+      _doCloseModal();
+    }
+
+    function _doCloseModal() {
       backdrop.classList.remove("open");
       modal.classList.remove("forced-fullscreen");
       fsBtn.textContent = "⛶";
-      movieFrame.src = ""; 
+      movieFrame.src    = "";
       document.body.style.overflow = "";
+      // Desbloquear orientación
+      try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
     }
 
     closeBtn.addEventListener("click", closeModal);
     backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
 
-    /* ─── LÓGICA DE PANTALLA COMPLETA & RUTA DE GESTOS ──── */
-    fsBtn.addEventListener("click", () => {
-      toggleCustomFullscreen();
+    /* ─── FAVORITOS ──────────────────────────────────────── */
+    favBtn.addEventListener("click", () => {
+      if (!currentItem) return;
+      toggleFav(currentItem);
     });
 
+    /* ─── FULLSCREEN ─────────────────────────────────────── */
+    fsBtn.addEventListener("click", toggleCustomFullscreen);
+
     function toggleCustomFullscreen() {
-      const modal = document.getElementById("modal");
-      
-      if(!modal.classList.contains("forced-fullscreen")) {
+      if (!modal.classList.contains("forced-fullscreen")) {
         modal.classList.add("forced-fullscreen");
         fsBtn.textContent = "✕";
-        
-        // 1. Forzar rotación apaisada (Horizontal)
-        if (screen.orientation && screen.orientation.lock) {
-          screen.orientation.lock("landscape").catch(() => {
-            console.log("Active la rotación automática en su dispositivo móvil");
-          });
-        }
-        
-        // 2. Insertar paso falso en el historial para capturar el gesto "Atrás" de Android
-        history.pushState({ fullscreenActive: true }, "");
-        
+        // Intentar lock de orientación horizontal
+        try {
+          screen.orientation?.lock?.("landscape").catch(() => {});
+        } catch {}
+        // Push de estado para capturar gesto "atrás" en Android
+        history.pushState({ muzaflixFullscreen: true }, "");
       } else {
         modal.classList.remove("forced-fullscreen");
         fsBtn.textContent = "⛶";
-        
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
-        }
+        try { screen.orientation?.unlock?.(); } catch {}
       }
     }
 
-    // 3. Escuchar el gesto físico de deslizar desde el borde para volver atrás
-    window.addEventListener("popstate", () => {
-      const modal = document.getElementById("modal");
+    /* ─── FIX CROSS-ORIGIN FULLSCREEN (IFRAME) ───────────── */
+    // Chrome Android bloquea el fullscreen nativo del iframe. Interceptamos el evento
+    // y lo redirigimos a nuestra implementación CSS.
+    document.addEventListener("fullscreenchange", () => {
+      // Si el iframe solicitó fullscreen y el browser se lo concedió, lo capturamos
+      if (document.fullscreenElement && document.fullscreenElement === movieFrame) {
+        try {
+          // Salir del fullscreen nativo que el iframe activó
+          document.exitFullscreen().catch(() => {});
+        } catch {}
+        // Activar nuestro fullscreen CSS + lock de orientación
+        if (!modal.classList.contains("forced-fullscreen")) {
+          toggleCustomFullscreen();
+        }
+      }
+      // Si se sale del fullscreen nativo (por esc o gesto), quitar también el nuestro
+      if (!document.fullscreenElement && modal.classList.contains("forced-fullscreen")) {
+        modal.classList.remove("forced-fullscreen");
+        fsBtn.textContent = "⛶";
+        try { screen.orientation?.unlock?.(); } catch {}
+      }
+    });
+
+    // Escuchar prefijos webkit para Safari/iOS
+    document.addEventListener("webkitfullscreenchange", () => {
+      const el = document.webkitFullscreenElement;
+      if (!el && modal.classList.contains("forced-fullscreen")) {
+        modal.classList.remove("forced-fullscreen");
+        fsBtn.textContent = "⛶";
+        try { screen.orientation?.unlock?.(); } catch {}
+      }
+    });
+
+    /* ─── GESTO ATRÁS (Android) ──────────────────────────── */
+    window.addEventListener("popstate", (e) => {
       if (modal.classList.contains("forced-fullscreen")) {
         modal.classList.remove("forced-fullscreen");
         fsBtn.textContent = "⛶";
-        if (screen.orientation && screen.orientation.unlock) {
-          screen.orientation.unlock();
-        }
+        try { screen.orientation?.unlock?.(); } catch {}
+      } else if (backdrop.classList.contains("open")) {
+        _doCloseModal();
       }
     });
 
-    /* ─── BUSCADOR & AUXILIARES ─────────────────────────── */
+    /* ─── BUSCADOR ───────────────────────────────────────── */
+    let searchTimeout;
     searchEl.addEventListener("input", (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      displayed = query ? allMovies.filter(m => m.title.toLowerCase().includes(query)) : allMovies;
-      renderGrid(displayed);
+      clearTimeout(searchTimeout);
+      const q = e.target.value.trim();
+      if (!q) {
+        document.getElementById("search-results").style.display = "none";
+        document.getElementById("catalog").style.display = "";
+        return;
+      }
+      searchTimeout = setTimeout(() => doSearch(q), 380);
     });
 
-    function renderSkeletons(count) {
-      grid.innerHTML = "";
-      for (let i = 0; i < count; i++) { const sk = document.createElement("div"); sk.className = "skeleton"; grid.appendChild(sk); }
+    async function doSearch(query) {
+      document.getElementById("catalog").style.display = "none";
+      const srEl  = document.getElementById("search-results");
+      const grid  = document.getElementById("search-grid");
+      const label = document.getElementById("search-label");
+      srEl.style.display = "";
+      label.textContent  = `Resultados para "${query}"`;
+      grid.innerHTML     = "";
+      // Skeletons en grid
+      for (let i = 0; i < 10; i++) {
+        const sk = document.createElement("div");
+        sk.className = "skeleton";
+        sk.style.aspectRatio = "2/3";
+        grid.appendChild(sk);
+      }
+      try {
+        const [rMovies, rTV] = await Promise.all([
+          fetch(`${API_BASE}/search/movie?api_key=${API_KEY}&language=es-MX&query=${encodeURIComponent(query)}`).then(r => r.json()),
+          fetch(`${API_BASE}/search/tv?api_key=${API_KEY}&language=es-MX&query=${encodeURIComponent(query)}`).then(r => r.json()),
+        ]);
+        const movies = (rMovies.results || []).slice(0, 10).map(m => ({ ...m, _type: "movie" }));
+        const series = (rTV.results    || []).slice(0, 10).map(m => ({ ...m, _type: "tv"    }));
+        const combined = [...movies, ...series].sort((a, b) => b.popularity - a.popularity).slice(0, 20);
+        grid.innerHTML = "";
+        if (!combined.length) {
+          grid.innerHTML = `<div style="color:var(--muted);font-size:0.85rem;padding:10px;">Sin resultados para "${query}".</div>`;
+          return;
+        }
+        combined.forEach((m, i) => grid.appendChild(buildCard(m, i)));
+      } catch (err) {
+        grid.innerHTML = `<div style="color:var(--muted);">Error al buscar: ${err.message}</div>`;
+      }
     }
 
-    loadMovies();
-
-    /* ─── REGISTRO PWA PARA INSTALACIÓN ─────────────────── */
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
+    /* ─── INICIO ─────────────────────────────────────────── */
+    async function init() {
+      renderFavs();
+      await Promise.all([
+        loadCarousel("carousel-popular",    "/movie/popular",        "movie"),
+        loadCarousel("carousel-nowplaying", "/movie/now_playing",    "movie"),
+        loadCarousel("carousel-tvtrending", "/trending/tv/week",     "tv"),
+      ]);
     }
 
+    init();
+
+    /* ─── PWA ────────────────────────────────────────────── */
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(err => console.log("SW:", err));
+    }
     let deferredPrompt;
     const installBtn = document.getElementById("pwa-install-btn");
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = "block";
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault(); deferredPrompt = e; installBtn.style.display = "block";
     });
-
-    installBtn.addEventListener('click', async () => {
+    installBtn.addEventListener("click", async () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') installBtn.style.display = "none";
+        if (outcome === "accepted") installBtn.style.display = "none";
         deferredPrompt = null;
       }
     });
-
-    window.addEventListener('appinstalled', () => {
-      installBtn.style.display = "none";
-    });
+    window.addEventListener("appinstalled", () => { installBtn.style.display = "none"; });
   </script>
 </body>
 </html>
