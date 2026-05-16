@@ -1,683 +1,382 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Birthday Wrapped ✨</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-:root{--c1:#00e5ff;--c2:#7c3aed;}
-html,body{width:100%;height:100%;overflow:hidden;background:#020b1a;font-family:'Segoe UI',system-ui,sans-serif;color:#fff;user-select:none;-webkit-user-select:none;}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Muzaflix</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00ff66">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    /* ─── RESET & VARIABLES VERDES ──────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Contenedor raíz ── */
-#app{position:fixed;inset:0;overflow:hidden;touch-action:none;}
+    :root {
+      --bg:        #050705;
+      --surface:   #0d110d;
+      --border:    rgba(0,255,102,0.08);
+      --accent:    #00ff66;
+      --accent2:   #00b3ff;
+      --gold:      #f5c518;
+      --text:      #e2eee2;
+      --muted:     #668872;
+      --glass-bg:  rgba(5,10,6,0.8);
+      --glass-border: rgba(0,255,102,0.15);
+      --card-w:    200px;
+    }
 
-/* ── Fondo ── */
-#bg{position:absolute;inset:0;background:
-  radial-gradient(ellipse at 15% 15%,rgba(0,120,220,.28) 0%,transparent 55%),
-  radial-gradient(ellipse at 85% 85%,rgba(124,58,237,.22) 0%,transparent 55%),
-  #020b1a;z-index:0;}
+    html { scroll-behavior: smooth; }
 
-/* ── Barra de progreso ── */
-#progress-bar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;gap:4px;padding:12px 14px;}
-.prog-seg{flex:1;height:3px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;}
-.prog-fill{height:100%;border-radius:99px;background:#fff;width:0%;transition:width .12s linear;}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-/* ── Slides wrapper ── */
-#slides-wrapper{position:absolute;inset:0;z-index:10;}
-.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;
-  opacity:0;pointer-events:none;transform:translateY(40px) scale(.97);transition:opacity .42s ease,transform .42s ease;}
-.slide.active{opacity:1;pointer-events:auto;transform:translateY(0) scale(1);}
-.slide.exit-up{opacity:0;transform:translateY(-50px) scale(1.03);transition:opacity .35s ease,transform .35s ease;}
-.slide.exit-down{opacity:0;transform:translateY(50px) scale(1.03);transition:opacity .35s ease,transform .35s ease;}
+    /* ─── EFECTO DE RUIDO MATRIX ────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999;
+      opacity: 0.25;
+    }
 
-/* ── Glassmorphism card ── */
-.glass{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:28px;
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  box-shadow:0 8px 40px rgba(0,80,180,.25),inset 0 1px 0 rgba(255,255,255,.18);}
+    /* ─── SCROLLBAR VERDE ───────────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #00ff66; border-radius: 2px; }
 
-/* ── Orbs ── */
-.orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45;pointer-events:none;animation:orbPulse 8s ease-in-out infinite;}
-@keyframes orbPulse{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.18);opacity:.55}}
+    /* ─── HEADER ────────────────────────────────────────── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 68px;
+      background: linear-gradient(180deg, rgba(5,7,5,0.98) 0%, rgba(5,7,5,0.85) 100%);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
 
-/* ── Partículas suspenso ── */
-.particle{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.3);animation:partFloat 2.5s ease-in-out infinite;}
-@keyframes partFloat{0%,100%{transform:translateY(-10px);opacity:.15}50%{transform:translateY(10px);opacity:.7}}
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      user-select: none;
+    }
+    .logo span { color: #fff; -webkit-text-fill-color: #fff; }
 
-/* ── Barra suspenso ── */
-.suspense-bar-track{width:200px;height:2px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:8px;}
-.suspense-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#00e5ff,#7c3aed,#f472b6);width:0%;}
+    /* BOTÓN INSTALAR PWA */
+    #pwa-install-btn {
+      background: rgba(0, 255, 102, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: none; /* Se enciende si Chrome da permiso */
+      margin-right: 15px;
+      transition: background 0.2s;
+    }
+    #pwa-install-btn:hover { background: var(--accent); color: #000; }
 
-/* ── Texto gradiente ── */
-.grad-text{background:linear-gradient(135deg,#fff 25%,#00e5ff 65%,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.grad-stat{background:linear-gradient(135deg,#fff,var(--stat-c1,#00e5ff));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .search-wrap { position: relative; display: flex; align-items: center; flex: 0 1 340px; }
+    .search-wrap svg { position: absolute; left: 14px; width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+    #search {
+      width: 100%; background: rgba(0,255,102,0.03); border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 14px 9px 40px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none;
+    }
+    #search:focus { border-color: var(--accent); background: rgba(0,255,102,0.07); }
+    #search:focus ~ svg { color: var(--accent); }
 
-/* ── Imagen slide stats ── */
-.stat-img-wrap{position:relative;width:100%;height:220px;overflow:hidden;border-radius:24px 24px 0 0;background:rgba(255,255,255,.04);}
-.stat-img-wrap img{width:100%;height:100%;object-fit:cover;opacity:.6;}
-.stat-img-wrap .emoji-over{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:5rem;}
-.stat-img-wrap .img-fade{position:absolute;inset:0;background:linear-gradient(to top,rgba(2,11,26,.75),transparent 50%);}
+    /* ─── HERO STRIP ─────────────────────────────────────── */
+    .hero { padding: 56px 40px 0; display: flex; align-items: flex-end; gap: 4px; }
+    .hero-label { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.4rem, 5vw, 4rem); letter-spacing: 2px; color: #fff; }
+    .hero-label em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-sub { padding: 10px 40px 32px; color: var(--muted); font-size: 0.875rem; }
 
-/* ── Progress regalo ── */
-.gift-bar-track{width:100%;height:12px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;}
-.gift-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#00e5ff,#7c3aed,#f472b6,#fbbf24);width:0%;transition:width .3s cubic-bezier(.34,1.56,.64,1);}
+    /* ─── SECTION ────────────────────────────────────────── */
+    .section { padding: 0 40px 60px; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 2px; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
 
-/* ── Confetti ── */
-.confetti-piece{position:fixed;top:-20px;border-radius:2px;pointer-events:none;z-index:999;animation:confettiFall linear forwards;}
-@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg);opacity:1}80%{opacity:1}100%{transform:translateY(115vh) rotate(720deg);opacity:0}}
+    /* ─── GRID & CARDS ───────────────────────────────────── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--card-w), 1fr)); gap: 18px; }
+    .card {
+      position: relative; width: 100%; aspect-ratio: 2/3; border-radius: 10px; overflow: hidden;
+      cursor: pointer; border: 1px solid var(--border); background: var(--surface);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      animation: fadeSlide 0.5s ease both;
+    }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .card:hover { transform: scale(1.05) translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.8); border-color: var(--accent); }
+    .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 50%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; }
+    .card-title { font-size: 0.8rem; font-weight: 500; color: #fff; margin-bottom: 6px; }
+    .card-meta { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: var(--muted); }
+    .card-rating { color: var(--gold); font-weight: 500; }
+    
+    .play-btn {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 44px; height: 44px; background: rgba(0, 255, 102, 0.9); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+    }
+    .card:hover .play-btn { opacity: 1; }
+    .play-btn svg { width: 18px; height: 18px; fill: #000; margin-left: 3px; }
 
-/* ── Animaciones de entrada slide ── */
-@keyframes popIn{0%{transform:scale(.75) translateY(30px);opacity:0}70%{transform:scale(1.04) translateY(-4px)}100%{transform:scale(1) translateY(0);opacity:1}}
-@keyframes fadeUp{0%{opacity:0;transform:translateY(22px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes scaleIn{0%{opacity:0;transform:scale(0) rotate(-20deg)}70%{transform:scale(1.3) rotate(8deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
-@keyframes slideRight{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
-@keyframes blink{0%,100%{opacity:.28}50%{opacity:.65}}
-@keyframes bobble{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
-@keyframes starFloat{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-5px);opacity:1}}
-@keyframes giftBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@keyframes shake{0%,100%{transform:rotate(0)}15%{transform:rotate(-7deg)}30%{transform:rotate(7deg)}45%{transform:rotate(-5deg)}60%{transform:rotate(5deg)}75%{transform:rotate(-2deg)}90%{transform:rotate(2deg)}}
-@keyframes cakeBob{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(4deg) scale(1.07)}}
-@keyframes pulseText{0%,100%{transform:scale(.97);opacity:.6}50%{transform:scale(1.03);opacity:1}}
-@keyframes barSegGrow{0%{width:0}100%{width:var(--seg-w,24px)}}
+    /* ─── SKELETON ───────────────────────────────────────── */
+    .skeleton { background: var(--surface); border-radius: 10px; aspect-ratio: 2/3; position: relative; overflow: hidden; border: 1px solid var(--border); }
+    .skeleton::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(0,255,102,0.03), transparent); animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 
-/* ── Botón audio ── */
-#audio-btn{position:fixed;bottom:32px;right:24px;z-index:200;width:56px;height:56px;border-radius:50%;
-  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  box-shadow:0 4px 24px rgba(0,180,255,.28),inset 0 1px 0 rgba(255,255,255,.18);
-  cursor:pointer;font-size:18px;color:#fff;display:flex;align-items:center;justify-content:center;
-  transition:transform .15s;}
-#audio-btn:active{transform:scale(.88);}
+    /* ─── MODAL VERDE MULTIMEDIA ─────────────────────────── */
+    #modal-backdrop { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    #modal-backdrop.open { opacity: 1; pointer-events: all; }
 
-/* ── Indicador slide ── */
-#slide-num{position:fixed;bottom:32px;left:24px;z-index:200;font-size:11px;color:rgba(255,255,255,.22);font-variant-numeric:tabular-nums;}
+    #modal { background: var(--glass-bg); border: 1px solid var(--glass-border); radius: 16px; width: 100%; max-width: 960px; max-height: 90vh; overflow-y: auto; box-shadow: 0 40px 100px rgba(0,0,0,0.9); transition: transform 0.3s ease; }
+    .modal-header { position: relative; height: 320px; overflow: hidden; }
+    #modal-backdrop-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.4); }
+    .modal-header-gradient { position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(to top, var(--bg), transparent); }
+    .modal-header-content { position: absolute; bottom: 24px; left: 28px; right: 28px; }
+    #modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: #fff; }
+    
+    .modal-tags { display: flex; gap: 8px; margin-top: 10px; }
+    .modal-tag { padding: 3px 10px; border-radius: 4px; font-size: 0.7rem; background: rgba(0,255,102,0.08); border: 1px solid rgba(0,255,102,0.2); color: #fff; }
+    .modal-tag.year { color: var(--accent); }
 
-/* ── Scroll hint intro ── */
-.scroll-hint{width:24px;height:40px;border-radius:99px;border:2px solid rgba(255,255,255,.25);display:flex;align-items:flex-start;justify-content:center;padding:4px;margin-top:16px;}
-.scroll-dot{width:6px;height:12px;border-radius:99px;background:rgba(255,255,255,.45);animation:bobble 1.6s ease-in-out infinite;}
+    /* CONTROLES DEL MODAL */
+    #close-btn { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 12; }
+    #close-btn:hover { background: #ff3333; }
+    
+    #fullscreen-btn { position: absolute; top: 16px; right: 64px; width: 36px; height: 36px; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-radius: 50%; color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 12; font-size: 1rem; }
+    #fullscreen-btn:hover { background: var(--accent); color: #000; }
 
-/* ── Utilidades ── */
-.w-full{width:100%;} .max-w-sm{max-width:360px;} .flex{display:flex;} .flex-col{flex-direction:column;}
-.items-center{align-items:center;} .justify-center{justify-content:center;} .gap-4{gap:16px;} .gap-2{gap:8px;} .gap-1{gap:4px;}
-.p-6{padding:24px;} .p-8{padding:32px;} .pt-5{padding-top:20px;} .px-1{padding-left:4px;padding-right:4px;}
-.mt-1{margin-top:4px;} .mt-2{margin-top:8px;} .mt-3{margin-top:12px;} .mb-1{margin-bottom:4px;} .mb-2{margin-bottom:8px;} .mb-3{margin-bottom:12px;}
-.text-xs{font-size:11px;} .text-sm{font-size:13px;} .text-base{font-size:15px;} .text-lg{font-size:18px;} .text-2xl{font-size:22px;} .text-3xl{font-size:28px;} .text-6xl{font-size:56px;} .text-7xl{font-size:64px;} .text-8xl{font-size:72px;}
-.font-light{font-weight:300;} .font-bold{font-weight:700;} .font-black{font-weight:900;}
-.uppercase{text-transform:uppercase;} .italic{font-style:italic;}
-.tracking-wide{letter-spacing:.05em;} .tracking-widest{letter-spacing:.15em;} .ls-ultra{letter-spacing:.32em;}
-.leading-snug{line-height:1.3;} .leading-relaxed{line-height:1.6;}
-.opacity-40{opacity:.4;} .opacity-45{opacity:.45;} .opacity-50{opacity:.5;} .opacity-55{opacity:.55;} .opacity-60{opacity:.6;}
-.relative{position:relative;} .overflow-hidden{overflow:hidden;}
-.justify-between{justify-content:space-between;}
-</style>
+    .modal-body { padding: 24px 28px; }
+    #modal-overview { font-size: 0.92rem; line-height: 1.7; color: #ccc; margin-bottom: 24px; }
+
+    /* REPRODUCTOR */
+    .player-wrap { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #000; border: 1px solid var(--border); }
+    #movie-frame { width: 100%; height: 100%; border: none; display: block; }
+    .player-note { margin-top: 10px; font-size: 0.72rem; color: var(--muted); text-align: center; }
+
+    /* ─── MODAL COMPLETO FORZADO POR CSS ─────────────────── */
+    #modal.forced-fullscreen { position: fixed !important; inset: 0 !important; width: 100vw !important; max-width: 100vw !important; height: 100vh !important; max-height: 100vh !important; border-radius: 0 !important; z-index: 9999 !important; }
+    #modal.forced-fullscreen .modal-header, #modal.forced-fullscreen #modal-overview, #modal.forced-fullscreen .player-note { display: none !important; }
+    #modal.forced-fullscreen .modal-body { padding: 0 !important; height: 100vh !important; }
+    #modal.forced-fullscreen .player-wrap { width: 100vw !important; height: 100vh !important; border-radius: 0 !important; border: none !important; }
+
+    @media (max-width: 600px) { header { padding: 0 16px; } :root { --card-w: 140px; } .modal-header { height: 220px; } }
+  </style>
 </head>
 <body>
-<div id="app">
-  <div id="bg"></div>
-  <div id="progress-bar"></div>
-  <div id="slides-wrapper"></div>
-  <button id="audio-btn" onclick="toggleAudio()">▶</button>
-  <div id="slide-num"></div>
-  <audio id="audio" src="Mazzy Star - Fade Into You (Official Music Video).mp3" loop></audio>
-</div>
 
-<script>
-// ══════════════════════════════════════════════════════
-//  CONFIG
-// ══════════════════════════════════════════════════════
-const GIFT_TAPS = 50;
-const SLIDE_MS  = 9000;
-const SUSPENSE_MS = 5200; // tiempo de pantalla de suspenso (ms)
-
-const SLIDES = [
-  { suspense: null, type: 'intro' },
-  { 
-    suspense: { icon:'🥳', l1:'Hubo juntadas', l2:'que ningún reloj contó…' },
-    type:'stats', emoji:'', title:'cantidad de juntadas', stat:'76',
-    sub:'noches hablando al pedo, juntadas que dejan anecdotas, risas y momentos unicos',
-    c1:'#00e5ff', c2:'#7c3aed', 
-    img: 'foto1.jpg' 
-  },
-  { 
-    suspense: { icon:'😂', l1:'Hubo un número', l2:'que no cabe en ninguna foto…' },
-    type:'stats', emoji:'😂', title:'Risas contadas', stat:'+9.999',
-    sub:'carcajadas, chistes compartidos y boludeces que solo nosotros entendemos',
-    c1:'#fbbf24', c2:'#f472b6', 
-    img:'/assets/foto2.jpg' // <-- Esta no tenía link, podés subirla a Postimages y cambiar el link aquí
-  },
-  { 
-    suspense: { icon:'🗺️', l1:'Cada kilómetro', l2:'tiene una historia…' },
-    type:'stats', emoji:'', title:'El dia que mas caminamos', stat:'7.4km',
-    sub:'Fuimos a ver a miranda y caminamos un monton, 📍terminal parana -> 📍residencia -> 📍shopping -> 📍costanera -> 📍shopping(de nuevo) -> y despues... todo miranda',
-    c1:'#34d399', c2:'#00bfff', 
-    img: 'foto3.jpg' 
-  },
-  { 
-    suspense: { icon:'🍕', l1:'Hubo comidas', l2:'que se volvieron rituales…' },
-    type:'stats', emoji:'', title:'Comidas a medianoche', stat:'36',
-    sub:'delivery, picadas, antojos y cenas que duraron tres horas',
-    c1:'#fb923c', c2:'#ef4444', 
-    img: 'foto4.jpg' 
-  },
-  { 
-    suspense: { icon:'🎵', l1:'tambien nos unió otra cosa', l2:'MÚSICA' },
-    type:'stats', emoji:'🎵', title:'Canciones en loop', stat:'ceiling figures',
-    sub:'Poder hacer música con tu mejor amigo se siente como un privilegio que no muchos pueden tener.',
-    c1:'#a78bfa', c2:'#ec4899', 
-    img: 'foto5.jpg' 
-  },
-  { 
-    suspense: { icon:'💬', l1:'Algunas palabras', l2:'no se olvidan jamás…' },
-    type:'quote',
-    quote:'I don´t tell you this often but i apreciate you.',
-    author:'Me lo dijiste vos...',
-    c1:'#a78bfa', c2:'#ec4899' 
-  },
-  { suspense: { icon:'🎬', l1:'Y hubo momentos', l2:'que quedaron grabados para siempre…' },
-    type:'video' 
-  },
-  { suspense: { icon:'🎁', l1:'Pero lo mejor', l2:'todavía no llegó…' },
-    type:'gift' 
-  },
-];const TOTAL = SLIDES.length;
-
-// ══════════════════════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════════════════════
-let cur = 0, showSuspense = false, progress = 0, paused = false, audioPlaying = false;
-let timerID = null, suspenseTimerID = null;
-let giftTaps = 0, giftExploded = false, giftDone = false;
-
-// ══════════════════════════════════════════════════════
-//  PROGRESS BAR
-// ══════════════════════════════════════════════════════
-function buildProgressBar() {
-  const bar = document.getElementById('progress-bar');
-  bar.innerHTML = '';
-  for (let i = 0; i < TOTAL; i++) {
-    const seg = document.createElement('div');
-    seg.className = 'prog-seg';
-    const fill = document.createElement('div');
-    fill.className = 'prog-fill';
-    fill.id = `pf-${i}`;
-    seg.appendChild(fill);
-    bar.appendChild(seg);
-  }
-}
-function updateProgressBar() {
-  for (let i = 0; i < TOTAL; i++) {
-    const el = document.getElementById(`pf-${i}`);
-    if (!el) continue;
-    if (i < cur) el.style.width = '100%';
-    else if (i === cur) el.style.width = (showSuspense ? 0 : progress * 100) + '%';
-    else el.style.width = '0%';
-  }
-}
-
-// ══════════════════════════════════════════════════════
-//  TIMER
-// ══════════════════════════════════════════════════════
-function startTimer() {
-  clearInterval(timerID);
-  // Agregamos la condición del video para que no avance solo por tiempo
-  if (paused || SLIDES[cur].type === 'gift' || SLIDES[cur].type === 'video' || showSuspense) return;
-  timerID = setInterval(() => {
-    progress += 100 / SLIDE_MS;
-    if (progress >= 1) { progress = 0; advance(); return; }
-    updateProgressBar();
-  }, 100);
-}
-
-// ══════════════════════════════════════════════════════
-//  NAVEGACIÓN
-// ══════════════════════════════════════════════════════
-function goTo(idx, direction = 'forward') {
-  if (idx < 0 || idx >= TOTAL) return;
-  clearInterval(timerID);
-  clearTimeout(suspenseTimerID);
-
-  const oldSlide = document.querySelector('.slide.active');
-  if (oldSlide) {
-    oldSlide.classList.remove('active');
-    oldSlide.classList.add(direction === 'forward' ? 'exit-up' : 'exit-down');
-    setTimeout(() => oldSlide.classList.remove('exit-up','exit-down'), 400);
-  }
-
-  cur = idx;
-  progress = 0;
-  giftTaps = 0; giftExploded = false; giftDone = false;
-
-  const target = SLIDES[cur];
-  if (direction === 'forward' && target.suspense) {
-    showSuspense = true;
-    renderSuspense(target.suspense);
-    updateProgressBar();
-    document.getElementById('slide-num').textContent = `${cur + 1} / ${TOTAL}`;
-    suspenseTimerID = setTimeout(() => {
-      showSuspense = false;
-      renderSlide(cur);
-      startTimer();
-    }, SUSPENSE_MS);
-  } else {
-    showSuspense = false;
-    renderSlide(cur);
-    startTimer();
-  }
-  updateProgressBar();
-  document.getElementById('slide-num').textContent = `${cur + 1} / ${TOTAL}`;
-}
-
-function advance() { goTo(cur + 1, 'forward'); }
-function back()    { goTo(cur - 1, 'backward'); }
-
-// ══════════════════════════════════════════════════════
-//  RENDER HELPERS
-// ══════════════════════════════════════════════════════
-function orb(w, x, y, color, delay) {
-  return `<div class="orb" style="width:${w}px;height:${w}px;left:${x};top:${y};background:${color};animation-delay:${delay}s;animation-duration:${7+delay}s"></div>`;
-}
-
-function showSlide(el) {
-  const wrap = document.getElementById('slides-wrapper');
-  // remove old suspense/slide
-  wrap.innerHTML = '';
-  wrap.appendChild(el);
-  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('active')));
-}
-
-// ── Suspenso ──
-function renderSuspense(data) {
-  const d = document.createElement('div');
-  d.className = 'slide';
-  d.innerHTML = `
-    ${orb(300,'-60px','8%','radial-gradient(circle,#00bfff,transparent)',0)}
-    ${orb(240,'55%','45%','radial-gradient(circle,#7c3aed,transparent)',1)}
-    ${[...Array(10)].map((_,i)=>`<div class="particle" style="left:${8+i*9}%;top:${15+(i%4)*20}%;animation-delay:${i*.18}s;animation-duration:${2.2+i*.25}s"></div>`).join('')}
-    <div id="sus-icon" style="font-size:4.5rem;filter:drop-shadow(0 0 32px rgba(0,200,255,.75));animation:scaleIn .75s ease-out forwards;">${data.icon}</div>
-    <div style="animation:fadeUp .6s .45s ease-out both;">
-      <p style="font-size:22px;font-weight:300;opacity:.6;margin-bottom:8px;">${data.l1}</p>
-      <p class="grad-text" style="font-size:28px;font-weight:900;">${data.l2}</p>
+  <header>
+    <div class="logo">Muza<span>flix</span></div>
+    <div style="display: flex; align-items: center;">
+      <button id="pwa-install-btn">Instalar Muzaflix 📲</button>
+      <div class="search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search" placeholder="Buscar película…" autocomplete="off" />
+      </div>
     </div>
-    <div class="suspense-bar-track">
-      <div class="suspense-bar-fill" id="sus-bar"></div>
+  </header>
+
+  <div class="hero">
+    <h1 class="hero-label">En <em>Muzaflix</em></h1>
+  </div>
+  <p class="hero-sub">El catálogo definitivo en color neón · Conexión PlayIMDb automatizada</p>
+
+  <section class="section">
+    <div class="section-title">Populares Ahora</div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <div id="modal-backdrop" role="dialog" aria-modal="true">
+    <div id="modal">
+      <div class="modal-header">
+        <img id="modal-backdrop-img" src="" alt="" />
+        <div class="modal-header-gradient"></div>
+        <button id="close-btn" aria-label="Cerrar">✕</button>
+        <button id="fullscreen-btn" title="Pantalla Completa">⛶</button>
+        <div class="modal-header-content">
+          <h2 id="modal-title"></h2>
+          <div class="modal-tags" id="modal-tags"></div>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p id="modal-overview"></p>
+        <div class="player-wrap">
+          <iframe id="movie-frame" src="" allowfullscreen allow="fullscreen" loading="lazy"></iframe>
+        </div>
+        <p class="player-note">Servidor PlayIMDb Activo. Si el botón interno de pantalla grande falla, usa nuestro botón ⛶ de arriba.</p>
+      </div>
     </div>
-    <p style="font-size:10px;text-transform:uppercase;letter-spacing:.3em;opacity:.3;animation:blink 1.3s infinite;">cargando tu historia…</p>
-  `;
-  showSlide(d);
-  // animar barra a lo largo de SUSPENSE_MS
-  requestAnimationFrame(() => {
-    const bar = document.getElementById('sus-bar');
-    if (bar) {
-      bar.style.transition = `width ${SUSPENSE_MS}ms ease-in-out`;
-      requestAnimationFrame(() => { bar.style.width = '100%'; });
+  </div>
+
+  <script>
+    const API_KEY       = "3eea574ca84276b797d37e87d0d1983f";          
+    const STREAM_SERVER = "https://www.playimdb.com/title/"; 
+    const IMG_BASE      = "https://image.tmdb.org/t/p/w500";
+    const IMG_BASE_LG   = "https://image.tmdb.org/t/p/w1280";
+    const API_BASE      = "https://api.themoviedb.org/3";
+
+    let allMovies  = [];
+    let displayed  = [];
+
+    const grid       = document.getElementById("grid");
+    const backdrop   = document.getElementById("modal-backdrop");
+    const closeBtn   = document.getElementById("close-btn");
+    const fsBtn      = document.getElementById("fullscreen-btn");
+    const searchEl   = document.getElementById("search");
+    const movieFrame = document.getElementById("movie-frame");
+
+    /* ─── API TMDb CATALOGO ─────────────────────────────── */
+    async function loadMovies() {
+      renderSkeletons(20);
+      try {
+        const url = `${API_BASE}/movie/popular?api_key=${API_KEY}&language=es-MX`;
+        const res = await fetch(url);
+        const data = await res.json();
+        allMovies = data.results.slice(0, 20);
+        displayed = allMovies;
+        renderGrid(displayed);
+      } catch (err) {
+        grid.innerHTML = `<div class="state-msg"><h3>Error al conectar</h3></div>`;
+      }
     }
-  });
-}
 
-// ── Slide intro ──
-function renderIntro() {
-  const d = document.createElement('div');
-  d.className = 'slide';
-  d.innerHTML = `
-    ${orb(320,'-80px','-60px','radial-gradient(circle,#00bfff,transparent)',0)}
-    ${orb(270,'55%','50%','radial-gradient(circle,#7c3aed,transparent)',2)}
-    ${orb(190,'25%','72%','radial-gradient(circle,#f472b6,transparent)',3)}
-    <div style="font-size:4.5rem;filter:drop-shadow(0 0 28px rgba(0,200,255,.85));animation:scaleIn .7s .2s ease-out both;">✨</div>
-    <div style="animation:fadeUp .6s .45s ease-out both;">
-      <p class="uppercase ls-ultra opacity-45" style="font-size:14px;margin-bottom:12px;">20 años y amistad</p>
-      <h1 class="grad-text" style="font-size:clamp(52px,15vw,72px);font-weight:900;line-height:1;filter:drop-shadow(0 0 40px rgba(0,200,255,.45));">Wrapped</h1>
-      <p style="opacity:.35;margin-top:16px;font-size:13px;">Tocá el costado · Deslizá para avanzar</p>
-    </div>
-    <div class="scroll-hint"><div class="scroll-dot"></div></div>
-  `;
-  showSlide(d);
-}
+    function renderGrid(movies) {
+      grid.innerHTML = "";
+      movies.forEach((m, i) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.animationDelay = `${i * 0.04}s`;
+        const posterUrl = m.poster_path ? `${IMG_BASE}${m.poster_path}` : null;
+        const year = m.release_date ? m.release_date.slice(0, 4) : "–";
+        const rating = m.vote_average ? m.vote_average.toFixed(1) : "–";
 
-// ── Slide stats ──
-function renderStats(s) {
-  const d = document.createElement('div');
-  d.className = 'slide';
-  d.innerHTML = `
-    ${orb(290,'-50px','5%',`radial-gradient(circle,${s.c1},transparent)`,0)}
-    ${orb(230,'52%','52%',`radial-gradient(circle,${s.c2},transparent)`,1.5)}
-    <div class="glass w-full max-w-sm overflow-hidden" style="animation:popIn .55s .1s ease-out both;">
-      <div class="stat-img-wrap">
-        <img src="${s.img}" onerror="this.style.display='none'" alt="">
-        <div class="emoji-over" style="filter:drop-shadow(0 0 24px ${s.c1});">${s.emoji}</div>
-        <div class="img-fade"></div>
-      </div>
-      <div class="p-6 pt-5" style="text-align:left;">
-        <p class="uppercase tracking-widest opacity-40" style="font-size:11px;margin-bottom:4px;">${s.title}</p>
-        <p class="grad-stat font-black" style="font-size:clamp(44px,12vw,60px);line-height:1;--stat-c1:${s.c1};animation:slideRight .5s .35s ease-out both;">${s.stat}</p>
-        <p class="opacity-60 leading-relaxed" style="font-size:13px;margin-top:12px;animation:fadeUp .5s .5s ease-out both;">${s.sub}</p>
-      </div>
-    </div>
-  `;
-  showSlide(d);
-}
-
-// ── Slide quote ──
-function renderQuote(s) {
-  const d = document.createElement('div');
-  d.className = 'slide';
-  d.innerHTML = `
-    ${orb(280,'-40px','15%',`radial-gradient(circle,${s.c1},transparent)`,0)}
-    ${orb(220,'50%','50%',`radial-gradient(circle,${s.c2},transparent)`,1.5)}
-    <div class="glass w-full max-w-sm p-8 flex flex-col gap-4" style="text-align:left;animation:popIn .55s .15s ease-out both;">
-      <div style="font-size:3rem;filter:drop-shadow(0 0 20px ${s.c1});animation:scaleIn .5s .3s ease-out both;">💬</div>
-      <p style="font-size:clamp(20px,5.5vw,26px);font-weight:700;line-height:1.3;
-        background:linear-gradient(135deg,#fff,${s.c1});-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-        animation:fadeUp .5s .4s ease-out both;">"${s.quote}"</p>
-      <p class="italic opacity-40" style="font-size:13px;animation:fadeUp .5s .7s ease-out both;">${s.author}</p>
-      <div class="flex gap-1 mt-1">
-        ${[s.c1,s.c2,'rgba(255,255,255,.35)'].map((c,i)=>`<div style="height:3px;border-radius:99px;background:${c};animation:barSegGrow .5s ${.85+i*.1}s ease-out both;--seg-w:${20+i*18}px;width:0"></div>`).join('')}
-      </div>
-    </div>
-  `;
-  showSlide(d);
-}
-
-// ── Slide video ──
-// ── Slide video ──
-function renderVideo() {
-  const d = document.createElement('div');
-  d.className = 'slide';
-  d.innerHTML = `
-    ${orb(300,'20%','-40px','radial-gradient(circle,#f472b6,transparent)',0)}
-    ${orb(200,'-20px','55%','radial-gradient(circle,#00bfff,transparent)',2)}
-    <div class="glass w-full max-w-sm p-6 flex flex-col items-center gap-4" style="animation:popIn .55s .1s ease-out both;">
-      <div class="flex items-center gap-2">
-        <span style="font-size:2rem;filter:drop-shadow(0 0 16px #f472b6);">🎬</span>
-        <p class="uppercase tracking-widest opacity-45" style="font-size:11px;">El momento del año</p>
-      </div>
-      <div style="width:100%; border-radius:16px; overflow:hidden; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center;" id="vid-wrap">
-        <video 
-          id="mi-video"
-          src="video.mp4" 
-          controls 
-          playsinline 
-          style="width:100%; border-radius:16px;">
-        </video>
-      </div>
-      <p class="opacity-50 leading-relaxed" style="font-size:13px;">Ese momento que guardamos para siempre 🥳</p>
-    </div>
-  `;
-  showSlide(d);
-
-  // --- LÓGICA INTELIGENTE DEL VIDEO (CON HACK ANTIFREEZE) ---
-  setTimeout(() => {
-    const vid = document.getElementById('mi-video');
-    const bgAudio = document.getElementById('audio');
-    let videoTerminado = false; // Bandera de seguridad
-    
-    if (vid) {
-      // 1. Cuando Julián le da Play al video, pausamos a Mazzy Star
-      vid.addEventListener('play', () => {
-        if (audioPlaying && bgAudio) {
-          bgAudio.pause();
-        }
-      });
-
-      // 2. EL HACK: Revisar el tiempo constantemente
-      vid.addEventListener('timeupdate', () => {
-        // Si el video arrancó y estamos a 0.4 segundos del final...
-        if (vid.duration > 0 && vid.currentTime >= (vid.duration - 0.4)) {
-          if (!videoTerminado) {
-            videoTerminado = true;
-            if (audioPlaying && bgAudio) bgAudio.play().catch(()=>{});
-            advance(); // Forzamos el salto a la torta
-          }
-        }
-      });
-
-      // 3. Dejamos el evento normal por las dudas
-      vid.addEventListener('ended', () => {
-        if (!videoTerminado) {
-          videoTerminado = true;
-          if (audioPlaying && bgAudio) bgAudio.play().catch(()=>{});
-          advance();
-        }
+        card.innerHTML = `
+          ${posterUrl ? `<img src="${posterUrl}" alt="${m.title}" loading="lazy"/>` : `<div class="no-poster"><span>Sin Póster</span></div>`}
+          <div class="card-overlay">
+            <div class="card-title">${m.title}</div>
+            <div class="card-meta"><span class="card-rating">★ ${rating}</span><span>• ${year}</span></div>
+          </div>
+          <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        `;
+        card.addEventListener("click", () => openModal(m));
+        grid.appendChild(card);
       });
     }
-  }, 50);
-}
 
-// ── Slide regalo ──
-function renderGift() {
-  giftTaps = 0; giftExploded = false; giftDone = false;
-  const d = document.createElement('div');
-  d.className = 'slide';
-  d.id = 'slide-gift';
-  d.innerHTML = `
-    ${orb(340,'-70px','-50px','radial-gradient(circle,#fbbf24,transparent)',0)}
-    ${orb(260,'48%','48%','radial-gradient(circle,#f472b6,transparent)',1.5)}
-    <div id="gift-content" class="flex flex-col items-center gap-4 w-full max-w-sm">
-      <div style="animation:fadeUp .5s ease-out both;">
-        <p class="uppercase tracking-widest opacity-45" style="font-size:11px;letter-spacing:.3em;">El regalo</p>
-        <h2 class="font-black" style="font-size:28px;margin-top:8px;">¿Te animás a abrirlo?</h2>
-      </div>
-      <div id="gift-box" onclick="tapGift()" style="cursor:pointer;animation:giftBob 2.2s ease-in-out infinite;">
-        <div class="glass p-8 flex flex-col items-center gap-2" style="min-width:190px;">
-          <div id="gift-emoji" style="font-size:4.5rem;filter:drop-shadow(0 0 12px rgba(251,191,36,.5));">🎁</div>
-          <p class="opacity-35" style="font-size:11px;margin-top:4px;">¡Tocá para abrir!</p>
-        </div>
-      </div>
-      <div class="w-full flex flex-col items-center gap-2">
-        <div class="gift-bar-track"><div class="gift-bar-fill" id="gift-bar"></div></div>
-        <div class="flex justify-between w-full px-1">
-          <p class="opacity-40" style="font-size:11px;" id="gift-label">${GIFT_TAPS} toques más</p>
-          <p class="opacity-40" style="font-size:11px;" id="gift-pct">0%</p>
-        </div>
-      </div>
-      <p id="gift-hype" style="font-size:13px;font-weight:700;
-        background:linear-gradient(135deg,#fbbf24,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-        animation:pulseText .75s infinite;display:none;">¡Ya casi! ✨ ¡Seguí tocando!</p>
-    </div>
-    <div id="cake-content" style="display:none;" class="flex flex-col items-center gap-5 w-full max-w-xs text-center">
-      <div class="glass p-8 flex flex-col items-center gap-5" style="animation:popIn .6s .2s ease-out both;">
-        <div style="animation:cakeBob 2.6s ease-in-out infinite;">
-          <img src="/assets/torta.png" alt="Torta" style="width:144px;height:144px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-          <div style="font-size:4.5rem;display:none;filter:drop-shadow(0 0 30px #fbbf24)">🎂</div>
-        </div>
-        <div style="animation:fadeUp .6s .5s ease-out both;">
-          <p class="uppercase tracking-widest opacity-45" style="font-size:11px;margin-bottom:12px;">¡Feliz 20 años pa!</p>
-          <p class="font-black leading-snug" style="font-size:22px;
-            background:linear-gradient(135deg,#fff,#00e5ff,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
-            Que este año sea tan especial como vos 💫</p>
-          <p style="opacity:.38;margin-top:12px;font-size:13px;">Con todo el amor del mundo locura mix 🌊</p>
-        </div>
-        <div class="flex gap-1 mt-1">
-          ${['⭐','🌟','✨','💛','✨','🌟','⭐'].map((s,i)=>`<span style="font-size:13px;animation:starFloat 1.6s ${i*.14}s ease-in-out infinite;">${s}</span>`).join('')}
-        </div>
-      </div>
-    </div>
-  `;
-  showSlide(d);
-  paused = true;
-}
+    /* ─── LOGICA DE CONCATENACIÓN AUTOMÁTICA tt DE IMDB ── */
+    async function openModal(movie) {
+      document.getElementById("modal-title").textContent = movie.title;
+      document.getElementById("modal-overview").textContent = movie.overview || "Sin sinopsis.";
+      document.getElementById("modal-backdrop-img").src = movie.backdrop_path ? `${IMG_BASE_LG}${movie.backdrop_path}` : '';
+      
+      const tagsContainer = document.getElementById("modal-tags");
+      tagsContainer.innerHTML = `<span class="modal-tag year">${movie.release_date ? movie.release_date.slice(0, 4) : '–'}</span><span class="modal-tag">★ ${movie.vote_average.toFixed(1)}</span>`;
 
-function tapGift() {
-  if (giftExploded) return;
-  giftTaps = Math.min(giftTaps + 1, GIFT_TAPS);
-  const pct = Math.round(giftTaps / GIFT_TAPS * 100);
-  const rem = GIFT_TAPS - giftTaps;
+      backdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
 
-  // actualizar UI
-  const bar = document.getElementById('gift-bar');
-  if (bar) bar.style.width = pct + '%';
-  const lbl = document.getElementById('gift-label');
-  if (lbl) lbl.textContent = rem > 0 ? `${rem} toque${rem!==1?'s':''} más` : '¡Abriendo! 🎊';
-  const pctEl = document.getElementById('gift-pct');
-  if (pctEl) pctEl.textContent = pct + '%';
-
-  // escala y brillo crecientes
-  const box = document.getElementById('gift-box');
-  const sc = 1 + (giftTaps / GIFT_TAPS) * 0.18;
-  const glow = 12 + (giftTaps / GIFT_TAPS) * 35;
-  if (box) { box.style.transform = `scale(${sc})`; box.style.animationName = 'none'; }
-  const em = document.getElementById('gift-emoji');
-  if (em) em.style.filter = `drop-shadow(0 0 ${glow}px rgba(251,191,36,${.45 + giftTaps/GIFT_TAPS * .55}))`;
-
-  // shake visual
-  if (box) {
-    box.style.animation = 'shake .3s ease-out';
-    setTimeout(()=>{ if(box){ box.style.animation = giftTaps < GIFT_TAPS ? 'giftBob 2.2s ease-in-out infinite' : 'none'; } }, 310);
-  }
-
-  // hype text
-  const hype = document.getElementById('gift-hype');
-  if (hype) hype.style.display = giftTaps >= Math.floor(GIFT_TAPS * .7) && giftTaps < GIFT_TAPS ? 'block' : 'none';
-
-  if (giftTaps >= GIFT_TAPS && !giftExploded) {
-    giftExploded = true;
-    setTimeout(explodeGift, 80);
-  }
-}
-
-function explodeGift() {
-  const box = document.getElementById('gift-box');
-  if (box) {
-    box.style.transition = 'transform .45s ease-in, opacity .45s ease-in';
-    box.style.transform = 'scale(2.2)';
-    box.style.opacity = '0';
-  }
-  spawnConfetti();
-  setTimeout(() => {
-    const gc = document.getElementById('gift-content');
-    const cc = document.getElementById('cake-content');
-    if (gc) gc.style.display = 'none';
-    if (cc) { cc.style.display = 'flex'; }
-    giftDone = true;
-  }, 900);
-}
-
-// ── Confetti ──
-function spawnConfetti() {
-  const colors = ['#00e5ff','#7c3aed','#f472b6','#fbbf24','#34d399','#fb923c'];
-  for (let i = 0; i < 80; i++) {
-    const el = document.createElement('div');
-    el.className = 'confetti-piece';
-    const sz = 5 + Math.random() * 9;
-    const dur = 2 + Math.random() * 1.8;
-    const delay = Math.random() * 0.7;
-    el.style.cssText = `left:${Math.random()*100}%;width:${sz}px;height:${sz}px;background:${colors[i%colors.length]};animation-duration:${dur}s;animation-delay:${delay}s;`;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), (dur + delay + 0.5) * 1000);
-  }
-}
-
-// ── Dispatch render ──
-function renderSlide(idx) {
-  const s = SLIDES[idx];
-  if (s.type === 'intro')  renderIntro();
-  else if (s.type === 'stats')  renderStats(s);
-  else if (s.type === 'quote')  renderQuote(s);
-  else if (s.type === 'video')  renderVideo();
-  else if (s.type === 'gift')   renderGift();
-}
-
-// ══════════════════════════════════════════════════════
-//  SWIPE — pointer events (funciona en todo el slide)
-// ══════════════════════════════════════════════════════
-let ptStart = null, ptLast = null, ptTime = 0, dragging = false;
-const SWIPE_THRESHOLD = 50, VEL_THRESHOLD = 0.3;
-
-function onPtrDown(e) {
-  // Evita interferir si está tocando el video o el botón de audio
-  if (e.target.closest('video') || e.target.closest('#audio-btn')) return;
-  
-  // Registra el inicio del toque o clic para el swipe
-  const t = e.touches ? e.touches[0] : e;
-  ptStart = { x: t.clientX, y: t.clientY };
-  ptLast  = { x: t.clientX, y: t.clientY };
-  ptTime  = Date.now();
-  dragging = false;
-  paused = true;
-}
-
-function onPtrMove(e) {
-  if (!ptStart) return;
-  const t = e.touches ? e.touches[0] : e;
-  const dy = t.clientY - ptStart.y;
-  const dx = t.clientX - ptStart.x;
-  if (Math.abs(dy) > 8) { dragging = true; e.preventDefault(); }
-  ptLast = { x: t.clientX, y: t.clientY };
-}
-
-function onPtrUp(e) {
-  // --- 1. EL TRUCO DEL AUDIO (SOLO ARRANCA AL SOLTAR EL DEDO) ---
-  const audio = document.getElementById('audio');
-  if (audio && audio.paused && !audioPlaying) {
-    audio.play().then(() => {
-      audioPlaying = true;
-      const btn = document.getElementById('audio-btn');
-      if (btn) btn.textContent = '⏸';
-    }).catch(() => console.log("Aún bloqueado por el navegador"));
-  }
-
-  // --- 2. LÓGICA DE NAVEGACIÓN ---
-  if (!ptStart) return;
-  const t = e.changedTouches ? e.changedTouches[0] : e;
-  const dy = t.clientY - ptStart.y;
-  const dx = t.clientX - ptStart.x;
-  const dt = (Date.now() - ptTime) / 1000 || .001;
-  const vy = dy / dt / 1000; // px/ms → aproximado
-  const isGiftSlide = SLIDES[cur].type === 'gift';
-  const isSus = showSuspense;
-
-  if (dragging && Math.abs(dy) > Math.abs(dx)) {
-    // swipe vertical
-    if (dy < -SWIPE_THRESHOLD || vy < -VEL_THRESHOLD) {
-      if (!isGiftSlide && !isSus) advance();
-    } else if (dy > SWIPE_THRESHOLD || vy > VEL_THRESHOLD) {
-      if (!isSus) back();
+      try {
+        const resDetail = await fetch(`${API_BASE}/movie/${movie.id}?api_key=${API_KEY}`);
+        const movieData = await resDetail.json();
+        if (movieData.imdb_id) {
+          movieFrame.src = `${STREAM_SERVER}${movieData.imdb_id}/`;
+        } else {
+          movieFrame.src = "";
+        }
+      } catch (err) { console.error(err); }
     }
-  } else if (!dragging) {
-    // tap lateral
-    if (!isSus && !isGiftSlide) {
-      const w = window.innerWidth;
-      if (t.clientX < w * 0.33) back();
-      else if (t.clientX > w * 0.67) advance();
+
+    function closeModal() {
+      backdrop.classList.remove("open");
+      document.getElementById("modal").classList.remove("forced-fullscreen");
+      fsBtn.textContent = "⛶";
+      movieFrame.src = ""; 
+      document.body.style.overflow = "";
     }
-  }
 
-  ptStart = null; dragging = false;
-  
-  // --- 3. RETOMAR TIMER ---
-  setTimeout(() => {
-    if (SLIDES[cur].type !== 'gift' && SLIDES[cur].type !== 'video' && !showSuspense) { 
-      paused = false; 
-      startTimer(); 
+    closeBtn.addEventListener("click", closeModal);
+    backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
+
+    /* ─── BOTÓN DE PANTALLA COMPLETA HACK CSS ───────────── */
+    fsBtn.addEventListener("click", () => {
+      const modal = document.getElementById("modal");
+      modal.classList.toggle("forced-fullscreen");
+      if(modal.classList.contains("forced-fullscreen")) {
+        fsBtn.textContent = "✕";
+        if (screen.orientation && screen.orientation.lock) screen.orientation.lock("landscape").catch(() => {});
+      } else {
+        fsBtn.textContent = "⛶";
+        if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+      }
+    });
+
+    /* ─── BUSCADOR ──────────────────────────────────────── */
+    searchEl.addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      displayed = query ? allMovies.filter(m => m.title.toLowerCase().includes(query)) : allMovies;
+      renderGrid(displayed);
+    });
+
+    function renderSkeletons(count) {
+      grid.innerHTML = "";
+      for (let i = 0; i < count; i++) { const sk = document.createElement("div"); sk.className = "skeleton"; grid.appendChild(sk); }
     }
-  }, 300);
-}
-// registrar en el wrapper con passive:false para poder prevenir scroll
-const wrap = document.getElementById('slides-wrapper');
-wrap.addEventListener('touchstart', onPtrDown, { passive: true });
-wrap.addEventListener('touchmove',  onPtrMove, { passive: false });
-wrap.addEventListener('touchend',   onPtrUp,   { passive: true });
-wrap.addEventListener('mousedown',  onPtrDown);
-wrap.addEventListener('mousemove',  onPtrMove);
-wrap.addEventListener('mouseup',    onPtrUp);
 
-// ══════════════════════════════════════════════════════
-//  AUDIO
-// ══════════════════════════════════════════════════════
-function toggleAudio() {
-  const a = document.getElementById('audio');
-  const btn = document.getElementById('audio-btn');
-  if (audioPlaying) { a.pause(); btn.textContent = '▶'; }
-  else { a.play().catch(()=>{}); btn.textContent = '⏸'; }
-  audioPlaying = !audioPlaying;
-}
+    loadMovies();
 
-// ══════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════
-buildProgressBar();
-renderSlide(0);
-startTimer();
-document.getElementById('slide-num').textContent = `1 / ${TOTAL}`;
-</script>
+    /* ═══════════════════════════════════════════════════════
+       REGISTRO DE PWA (Habilita la instalación en Chrome)
+       ───────────────────────────────────────────────────── */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log("Service Worker registrado con éxito"))
+        .catch(err => console.log("Fallo en Service Worker", err));
+    }
+
+    let deferredPrompt;
+    const installBtn = document.getElementById("pwa-install-btn");
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Chrome dispara esto si el manifest.json y sw.js están bien configurados
+      e.preventDefault();
+      deferredPrompt = e;
+      // Mostramos el botón de instalación en la barra superior
+      installBtn.style.display = "block";
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('El usuario instaló Muzaflix');
+          installBtn.style.display = "none";
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('Muzaflix instalada correctamente');
+      installBtn.style.display = "none";
+    });
+  </script>
 </body>
 </html>
