@@ -1621,7 +1621,8 @@ function startNextEpisodeCountdown() {
       fsBtn.textContent = "⛶";
       movieFrame.src    = "";
       document.body.style.overflow = "";
-      // Desbloquear orientación
+      // Limpiar el hash de la URL al cerrar
+      history.replaceState(null, "", window.location.pathname + window.location.search);
       try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
     }
 
@@ -1673,10 +1674,17 @@ nextBtn?.addEventListener("click", () => {
     document.getElementById("share-btn")?.addEventListener("click", () => {
       if (!currentItem) return;
       const title = currentItem.title || currentItem.name || "";
+      // Build a deep-link URL with hash: e.g. #movie-12345 or #tv-67890
+      const hash = `#${currentType}-${currentItem.id}`;
+      const shareUrl = window.location.href.split("#")[0] + hash;
+      // Also update the browser URL bar so the user can copy it manually
+      history.replaceState(null, "", hash);
       if (navigator.share) {
-        navigator.share({ title: title, text: `Mirá "${title}" en Muzaflix!`, url: window.location.href }).catch(() => {});
+        navigator.share({ title: `${title} — Muzaflix`, text: `Mirá "${title}" en Muzaflix!`, url: shareUrl }).catch(() => {});
       } else {
-        navigator.clipboard?.writeText(window.location.href).then(() => alert("Link copiado!")).catch(() => {});
+        navigator.clipboard?.writeText(shareUrl)
+          .then(() => alert("¡Link copiado al portapapeles!"))
+          .catch(() => alert(shareUrl));
       }
     });
     document.getElementById("download-btn")?.addEventListener("click", () => {
@@ -2006,6 +2014,21 @@ initProfiles();
         loadCarousel("carousel-nowplaying", "/movie/now_playing",    "movie"),
         loadCarousel("carousel-tvtrending", "/trending/tv/week",     "tv"),
       ]);
+      // Deep link: si la URL tiene #movie-123 o #tv-456, abrir ese contenido
+      const hash = window.location.hash; // e.g. "#movie-12345"
+      const match = hash.match(/^#(movie|tv)-(\d+)$/);
+      if (match) {
+        const type = match[1];
+        const id   = match[2];
+        try {
+          const res  = await fetch(`${API_BASE}/${type}/${id}?api_key=${API_KEY}&language=es-MX`);
+          const item = await res.json();
+          item._type = type;
+          openModal(item);
+        } catch(e) {
+          console.warn("No se pudo abrir el link compartido:", e);
+        }
+      }
     }
     initProfiles();
 init();
