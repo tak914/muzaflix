@@ -112,7 +112,7 @@
   min-height: 560px;
 margin-top: -1px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
   overflow: hidden;
   background: #060a06;
@@ -149,8 +149,8 @@ margin-top: -1px;
 .hero-content {
   position: relative;
   z-index: 4;
-  padding: 60px 0 60px 60px;
-  max-width: 580px;
+  padding: clamp(30px, 5vh, 60px) 0 clamp(30px, 5vh, 60px) clamp(24px, 4vw, 60px);
+  max-width: min(580px, 50vw);
 }
 
 .hero-badge {
@@ -331,28 +331,116 @@ margin-top: -1px;
 }
 
 @media (max-width: 800px) {
+
+  /* ── Hero mobile: banner horizontal arriba, contenido solapado abajo ── */
   .hero-featured {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     height: auto;
     min-height: 0;
+    background: none !important;
+    background-size: unset !important;
   }
+
+  /* Banner horizontal */
   .hero-image-side {
-    position: absolute;
-    inset: 0;
-    height: 100%;
-    opacity: 0.4;
+    position: relative !important;
+    inset: auto !important;
+    width: 100%;
+    height: 56vw;
+    min-height: 200px;
+    max-height: 290px;
+    overflow: hidden;
+    flex-shrink: 0;
   }
+
+  /* Imagen con zoom sutil animado */
+  .hero-image-side img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 20% !important;
+    animation: heroMobileZoom 9s ease-in-out infinite alternate;
+    transform-origin: center center;
+  }
+
+  @keyframes heroMobileZoom {
+    from { transform: scale(1);    }
+    to   { transform: scale(1.07); }
+  }
+
+  /* Degradado inferior del banner: funde suavemente hacia el contenido */
+  .hero-image-side::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: 0 !important;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(5,7,5,0.15) 45%,
+      rgba(5,7,5,0.72) 75%,
+      var(--bg) 100%
+    ) !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+  }
+
+  /* Quitar efectos de desktop */
+  .hero-featured::after { display: none; }
+  .hero-featured::before { display: none; }
+  .hero-glow { display: none; }
+
+  /* Imagen primero visualmente aunque esté segunda en el HTML */
+  .hero-image-side { order: 1; }
+
+  /* Contenido: se monta sobre el degradado del banner */
   .hero-content {
-    padding: 120px 20px 120px;
+    order: 2;
+    position: relative;
+    z-index: 5;
+    padding: 0 20px 36px;
     max-width: 100%;
+    margin-top: -52px;   /* solapa sobre la zona degradada del banner */
+    background: transparent;
   }
-  .hero-featured {
-    height: 70vh;
-    min-height: 480px;
+
+  /* Badge */
+  .hero-badge {
+    font-size: 0.65rem;
+    padding: 4px 11px;
+    margin-bottom: 14px;
   }
-  #hero-description { font-size: 0.88rem; }
-  .hero-btn { flex: 1; justify-content: center; }
-  .hero-dots { left: 20px; }
+
+  /* Título/logo — directamente conectado con el banner */
+  #hero-title {
+    font-size: clamp(2.4rem, 9vw, 3.5rem);
+    margin-bottom: 10px;
+    line-height: 0.9;
+  }
+
+  /* Sinopsis recortada a 3 líneas */
+  #hero-description {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    -webkit-line-clamp: 3;
+    margin-bottom: 20px;
+  }
+
+  /* Botones apilados */
+  .hero-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .hero-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 20px;
+  }
+
+  .hero-dots { left: 20px; bottom: 8px; }
+  .hero-meta-row { margin-bottom: 10px; }
 }
 
 
