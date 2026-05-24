@@ -1911,8 +1911,8 @@ border-right: 1px solid rgba(255,255,255,0.06);
     /* ─── CONSTANTES ────────────────────────────────────── */
     const API_KEY       = "3eea574ca84276b797d37e87d0d1983f";
     const API_BASE      = "https://api.themoviedb.org/3";
-    const STREAM_MOVIE  = "https://www.playimdb.com/title/";
-    const STREAM_TV = "https://www.playimdb.com/series/";
+    const STREAM_MOVIE  = "https://streamimdb.ru/embed/movie/";
+    const STREAM_TV     = "https://streamimdb.ru/embed/tv/";
     const IMG_BASE      = "https://image.tmdb.org/t/p/w500";
     const IMG_LG        = "https://image.tmdb.org/t/p/w1280";
     const FAV_KEY       = "muzaflix_favs";
@@ -2486,7 +2486,6 @@ function attachLongPressToCarousel() {
           const savedProg = getProgress(item.id);
           if (savedProg && savedProg.season) {
             selSeason.value = savedProg.season;
-            // Recargar episodios de la temporada guardada
             try {
               const sRes = await fetch(`${API_BASE}/tv/${item.id}/season/${savedProg.season}?api_key=${API_KEY}`);
               const sData = await sRes.json();
@@ -2507,8 +2506,7 @@ function attachLongPressToCarousel() {
     }
 
     /* ─── SELECTORES TV ──────────────────────────────────── */
-    
-                  
+
     function buildTVSelectors(numSeasons) {
       selSeason.innerHTML = "";
       for (let s = 1; s <= numSeasons; s++) {
@@ -2516,7 +2514,8 @@ function attachLongPressToCarousel() {
         opt.value = s; opt.textContent = `Temporada ${s}`;
         selSeason.appendChild(opt);
       }
-      buildEpisodeOptions();
+      // No llamamos buildEpisodeOptions() aquí sin datos reales;
+      // se llena después del fetch de episodios.
     }
 
     function buildEpisodeOptions(count = 20) {
@@ -2542,20 +2541,36 @@ function attachLongPressToCarousel() {
         seasonSel.appendChild(opt);
       }
 
-      // Load episodes for current season
+      // Marca visualmente el episodio activo en el panel
+      function setActivePanelEp(epNumber) {
+        listEl.querySelectorAll(".episode-item").forEach(el => {
+          el.classList.toggle("active-ep", Number(el.dataset.epNum) === Number(epNumber));
+        });
+      }
+
+      // Carga episodios de una temporada y sincroniza ambos selectores
       async function loadEpisodes(season) {
         listEl.innerHTML = `<div style="padding:20px;color:var(--muted);font-size:0.82rem;">Cargando episodios...</div>`;
         try {
           const res = await fetch(`${API_BASE}/tv/${tvId}/season/${season}?api_key=${API_KEY}&language=es-MX`);
           const data = await res.json();
           const episodes = data.episodes || [];
+
+          // FIX 3: actualizar selEpisode con el conteo real de esta temporada
+          buildEpisodeOptions(episodes.length || 20);
+          // Sincronizar selector de temporada de arriba
+          selSeason.value = season;
+
           listEl.innerHTML = "";
           episodes.forEach(ep => {
             const item = document.createElement("div");
             item.className = "episode-item";
+            item.dataset.epNum = ep.episode_number; // para poder marcar activo luego
+
             const activeEp = Number(selEpisode.value || 1);
-            const activeSeas = Number(selSeason.value || 1);
-            if (ep.episode_number === activeEp && season === activeSeas) item.classList.add("active-ep");
+            if (ep.episode_number === activeEp && Number(season) === Number(selSeason.value)) {
+              item.classList.add("active-ep");
+            }
 
             const thumb = ep.still_path ? `https://image.tmdb.org/t/p/w300${ep.still_path}` : null;
             const dur = ep.runtime ? `${ep.runtime}m` : "";
@@ -2577,14 +2592,19 @@ function attachLongPressToCarousel() {
                 ${ep.overview ? `<div class="episode-desc">${ep.overview}</div>` : ""}
               </div>
             `;
+
             item.addEventListener("click", () => {
-  selSeason.value = season;
-  selEpisode.value = ep.episode_number;
-  if (currentImdbId) loadTVEpisode(season, ep.episode_number); // ← pasar valores directo
-  listEl.querySelectorAll(".episode-item").forEach(el => el.classList.remove("active-ep"));
-  item.classList.add("active-ep");
-  document.querySelector(".player-wrap")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-});
+              // FIX 2: sincronizar ambos selectores con valores reales
+              selSeason.value = season;
+              selEpisode.value = ep.episode_number;
+              // Reproducir pasando los valores directo (FIX de sesión anterior)
+              if (currentImdbId) loadTVEpisode(Number(season), ep.episode_number);
+              // Marcar activo en panel
+              setActivePanelEp(ep.episode_number);
+              // Scroll al reproductor
+              document.querySelector(".player-wrap")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            });
+
             listEl.appendChild(item);
           });
         } catch(err) {
@@ -2597,17 +2617,28 @@ function attachLongPressToCarousel() {
       if (savedProg?.season) seasonSel.value = savedProg.season;
 
       loadEpisodes(Number(seasonSel.value));
+
+      // Cambio de temporada en el panel → recarga lista y sincroniza selector de arriba
       seasonSel.addEventListener("change", () => loadEpisodes(Number(seasonSel.value)));
     }
 
-    // Cuando cambia temporada, recarga opciones de episodio dinámicamente
+    // FIX 1: agregar listener a selEpisode para que el cambio manual también reproduzca
+    selEpisode.addEventListener("change", () => {
+      if (!currentImdbId || currentType !== "tv") return;
+      loadTVEpisode();
+    });
+
+    // Cuando cambia temporada en selector de arriba, recarga episodios y sincroniza panel
     selSeason.addEventListener("change", async () => {
       if (!currentItem || currentType !== "tv") return;
+      const season = Number(selSeason.value);
+      // Sincronizar el selector de temporada del panel de abajo
+      const panelSeason = document.getElementById("ep-panel-season");
+      if (panelSeason) panelSeason.value = season;
       try {
-        const season = selSeason.value;
-        const res    = await fetch(`${API_BASE}/tv/${currentItem.id}/season/${season}?api_key=${API_KEY}`);
-        const data   = await res.json();
-        const count  = (data.episodes || []).length || 20;
+        const res   = await fetch(`${API_BASE}/tv/${currentItem.id}/season/${season}?api_key=${API_KEY}`);
+        const data  = await res.json();
+        const count = (data.episodes || []).length || 20;
         buildEpisodeOptions(count);
       } catch {
         buildEpisodeOptions(20);
@@ -2617,15 +2648,17 @@ function attachLongPressToCarousel() {
     tvLoadBtn.addEventListener("click", () => { if (currentImdbId) loadTVEpisode(); });
 
     function loadTVEpisode(forceSeason, forceEpisode) {
-  const s = Number(forceSeason ?? selSeason.value ?? 1);
-  const e = Number(forceEpisode ?? selEpisode.value ?? 1);
+
+  const s = Number(forceSeason ?? selSeason.value ?? 1) || 1;
+  const e = Number(forceEpisode ?? selEpisode.value ?? 1) || 1;
+
   // Forzar recarga limpia del iframe
   movieFrame.src = "about:blank";
 
   setTimeout(() => {
 
     const url =
-      `${STREAM_TV}${currentImdbId}?season=${s}&episode=${e}`;
+      `${STREAM_TV}${currentImdbId}/${s}/${e}`;
 
     console.log("Cargando episodio:", url);
 
