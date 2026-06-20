@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Muzaflix — Inicio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #050705;
+      --surface:      #0d110d;
+      --border:       rgba(0,255,102,0.08);
+      --accent:       #00ff66;
+      --accent2:      #00b3ff;
+      --gold:         #f5c518;
+      --text:         #e2eee2;
+      --muted:        #668872;
+      --glass-bg:     rgba(12,16,14,0.58);
+      --glass-border: rgba(0,255,102,0.15);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.3;
+    }
+
+    /* ─── HEADER ─────────────────────── */
+    header {
+      position: fixed; 
+      top: 0; left: 0; right: 0; 
+      z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; 
+      height: 75px;  
+      background: transparent; 
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      mask-image: linear-gradient(to bottom, black 0px, black 45px, transparent 75px);
+      -webkit-mask-image: linear-gradient(to bottom, black 0px, black 45px, transparent 75px);
+    }
+
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem; letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+
+    .header-btn {
+      border: 1.5px solid var(--accent);
+      background: rgba(0,255,102,0.07);
+      color: var(--accent);
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .header-btn:hover { background: var(--accent); color: #000; }
+
+    /* ─── HERO SECTION ─────────────────── */
+    .hero {
+      position: relative;
+      width: 100%;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 80px 24px 40px;
+    }
+
+    .poster-grid {
+      position: absolute; inset: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 6px; padding: 6px;
+      opacity: 0.35;
+      transform: scale(1.08);
+      filter: blur(5px);
+      animation: slowDrift 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes slowDrift {
+      from { transform: scale(1.08) translateY(0); }
+      to   { transform: scale(1.08) translateY(-18px); }
+    }
+
+    .poster-cell {
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+      position: relative;
+    }
+    .poster-cell::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,255,102,0.08) 0%, rgba(0,179,255,0.04) 100%);
+    }
+    .poster-cell:nth-child(1)  { background: linear-gradient(135deg, #1a0a0a, #4a1515); }
+    .poster-cell:nth-child(2)  { background: linear-gradient(135deg, #0a1a10, #153030); }
+    .poster-cell:nth-child(3)  { background: linear-gradient(135deg, #0d0d1a, #1a1540); }
+    .poster-cell:nth-child(4)  { background: linear-gradient(135deg, #1a1200, #3a2800); }
+    .poster-cell:nth-child(5)  { background: linear-gradient(135deg, #1a0010, #380020); }
+    .poster-cell:nth-child(6)  { background: linear-gradient(135deg, #0a1520, #104030); }
+    .poster-cell:nth-child(7)  { background: linear-gradient(135deg, #180a00, #401800); }
+    .poster-cell:nth-child(8)  { background: linear-gradient(135deg, #001018, #003040); }
+    .poster-cell:nth-child(9)  { background: linear-gradient(135deg, #0f0f0f, #252525); }
+    .poster-cell:nth-child(10) { background: linear-gradient(135deg, #1a0808, #3a1010); }
+    .poster-cell:nth-child(11) { background: linear-gradient(135deg, #081a08, #103010); }
+    .poster-cell:nth-child(12) { background: linear-gradient(135deg, #08081a, #101030); }
+    .poster-cell:nth-child(13) { background: linear-gradient(135deg, #1a1008, #3a2510); }
+    .poster-cell:nth-child(14) { background: linear-gradient(135deg, #150015, #320032); }
+    .poster-cell:nth-child(15) { background: linear-gradient(135deg, #081518, #103535); }
+    .poster-cell:nth-child(16) { background: linear-gradient(135deg, #181000, #382800); }
+    .poster-cell:nth-child(17) { background: linear-gradient(135deg, #000d18, #002038); }
+    .poster-cell:nth-child(18) { background: linear-gradient(135deg, #100808, #282010); }
+    .poster-cell:nth-child(19) { background: linear-gradient(135deg, #080818, #101028); }
+    .poster-cell:nth-child(20) { background: linear-gradient(135deg, #121800, #282e00); }
+    .poster-cell::after {
+      content: '▶';
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.06);
+    }
+
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,255,102,0.04) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(5,7,5,0.55) 0%, rgba(5,7,5,0.2) 30%, rgba(5,7,5,0.2) 60%, rgba(5,7,5,0.96) 100%);
+    }
+
+    .scan-line {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--accent) 30%, var(--accent2) 70%, transparent 100%);
+      opacity: 0.18;
+      animation: scanMove 8s ease-in-out infinite alternate;
+    }
+    .scan-line:nth-child(1) { top: 33%; }
+    .scan-line:nth-child(2) { top: 66%; animation-delay: -4s; }
+    @keyframes scanMove {
+      from { opacity: 0.08; transform: scaleX(0.6); }
+      to   { opacity: 0.22; transform: scaleX(1); }
+    }
+
+    .hero-content {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      max-width: 520px; width: 100%;
+      animation: fadeUp 0.9s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 14vw, 4.8rem);
+      line-height: 0.92; letter-spacing: 1px; color: #fff;
+      margin-bottom: 20px;
+      animation: fadeUp 0.9s 0.15s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-title .accent-word {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub {
+      font-size: 0.95rem; line-height: 1.65;
+      color: rgba(226,238,226,0.7); margin-bottom: 10px;
+      animation: fadeUp 0.9s 0.22s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-price {
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 32px;
+      animation: fadeUp 0.9s 0.28s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-price strong { color: var(--accent); font-weight: 500; }
+
+    .hero-cta {
+      display: flex; flex-direction: column; gap: 12px; width: 100%;
+      animation: fadeUp 0.9s 0.35s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .btn-primary {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 17px 28px;
+      background: var(--accent); color: #000; border: none; border-radius: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.3px;
+      transition: transform 0.18s, box-shadow 0.18s;
+      box-shadow: 0 0 32px rgba(0,255,102,0.25), 0 4px 20px rgba(0,0,0,0.4);
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 0 48px rgba(0,255,102,0.35), 0 8px 28px rgba(0,0,0,0.5);
+    }
+    .btn-primary svg { flex-shrink: 0; }
+
+    /* ─── FEATURES ─────────────────── */
+    .features {
+      position: relative; z-index: 10; width: 100%;
+      padding: 40px 20px 0;
+      display: flex; flex-direction: column; gap: 0;
+      animation: fadeUp 0.9s 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .features-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem;
+      letter-spacing: 3px; color: var(--muted); text-align: center;
+      margin-bottom: 20px; text-transform: uppercase;
+    }
+    .features-row {
+      display: flex; justify-content: center; gap: 0;
+      border: 1px solid var(--glass-border); border-radius: 14px;
+      background: var(--glass-bg); backdrop-filter: blur(20px); overflow: hidden;
+    }
+    .feature-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 7px; padding: 18px 10px; position: relative;
+    }
+    .feature-item:not(:last-child)::after {
+      content: ''; position: absolute; right: 0; top: 20%; bottom: 20%;
+      width: 1px; background: var(--glass-border);
+    }
+    .feature-icon { font-size: 1.35rem; line-height: 1; }
+    .feature-label { font-size: 0.7rem; color: var(--muted); text-align: center; line-height: 1.3; font-weight: 400; }
+    .feature-value { font-size: 0.78rem; color: var(--accent); font-weight: 500; text-align: center; }
+
+    /* ─── TENDENCIAS ─────────────────── */
+    .trending-preview {
+      position: relative; z-index: 10; width: 100%;
+      padding: 36px 0 0;
+      animation: fadeUp 0.9s 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .trending-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px; margin-bottom: 16px;
+    }
+    .trending-label {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem;
+      letter-spacing: 2px; color: #fff;
+    }
+    .trending-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+    .trending-scroll {
+      display: flex; gap: 19px; overflow-x: auto;
+      padding: 0 20px 12px; scrollbar-width: none; align-items: center;
+    }
+    .trending-scroll::-webkit-scrollbar { display: none; }
+    .trending-card {
+      flex-shrink: 0; width: 140px; height: 202px; border-radius: 10px;
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06); background: var(--surface);
+      display: block;
+      
+    }
+
+
+    .trending-card .rank {
+      position: absolute; bottom: -4px; left: -3px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 5.5rem; line-height: 1;
+      color: #fff; -webkit-text-stroke: 1px rgba(255,255,255,0.15);
+      text-shadow: 2px 2px 12px rgba(0,0,0,0.9); z-index: 2;
+    }
+    .trending-card .card-gradient {
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(to top, rgba(5,7,5,0.92) 0%, rgba(5,7,5,0.2) 55%, transparent 100%);
+    }
+    .card-bg { position: absolute; inset: 0; }
+    .card-logo {
+      position: absolute; top: 8px; left: 8px;
+      width: 22px; height: 22px; background: #e50914; border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; color: #fff; z-index: 3; font-weight: 700;
+    }
+
+.trending-card:hover .card-bg {
+      transform: scale(1.05); /* Sutil zoom de la imagen al hacer hover */
+    }
+    .trending-card:nth-child(1) .card-bg { background: linear-gradient(135deg, #2d0a0a, #6b1515, #e01b1b); }
+    .trending-card:nth-child(2) .card-bg { background: linear-gradient(135deg, #0a1a28, #1a3d55, #2a6090); }
+    .trending-card:nth-child(3) .card-bg { background: linear-gradient(135deg, #1a1200, #4a3500, #8a6a00); }
+    .trending-card:nth-child(4) .card-bg { background: linear-gradient(135deg, #0a0a2a, #1a1a5a, #2a2a8a); }
+    .trending-card:nth-child(5) .card-bg { background: linear-gradient(135deg, #0a1a0a, #1a4a1a, #2a7a2a); }
+
+    /* ─── FOOTER CTA ─────────────────────── */
+    .footer-cta {
+      position: relative; z-index: 10;
+      padding: 32px 20px 48px; text-align: center;
+      animation: fadeUp 0.9s 0.55s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .footer-cta p { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+    .footer-cta a { color: var(--accent); text-decoration: none; }
+    .divider {
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0 0 32px;
+    }
+    .ambient-glow {
+      position: absolute; top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,255,102,0.06) 0%, rgba(0,179,255,0.04) 40%, transparent 70%);
+      pointer-events: none; z-index: 5;
+    }
+
+    /* ═══════════════════════════════════════
+       MODAL DE AUTENTICACIÓN
+    ═══════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(5,7,5,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      /* FIX: overflow para pantallas pequeñas */
+      overflow-y: auto;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      /* FIX: en lugar de height fija, usamos max-height + scroll interno */
+      max-height: calc(100dvh - 32px);
+      background: #0d110d;
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 36px 28px 32px;
+      overflow-y: auto;
+      scrollbar-width: none;
+      /* FIX: margin auto para centrar cuando hay scroll */
+      margin: auto;
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+      box-shadow: 0 0 80px rgba(0,255,102,0.08), 0 40px 80px rgba(0,0,0,0.6);
+    }
+    .modal::-webkit-scrollbar { display: none; }
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 1.1rem;
+      transition: background 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    .modal-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 6px;
+    }
+    .modal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem; letter-spacing: 1px; color: #fff; margin-bottom: 4px;
+    }
+    .modal-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+
+    /* Tabs */
+    .auth-tabs {
+      display: flex; gap: 4px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px; padding: 4px;
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1; padding: 9px 12px; border: none;
+      border-radius: 7px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+      background: transparent; color: var(--muted);
+      transition: background 0.2s, color 0.2s;
+    }
+    .auth-tab.active { background: var(--accent); color: #000; }
+
+    /* Google button */
+    .btn-google {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 13px 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500;
+      color: var(--text); transition: background 0.2s, border-color 0.2s;
+      margin-bottom: 20px;
+    }
+    .btn-google:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.22); }
+    .btn-google:disabled { opacity: 0.5; cursor: not-allowed; }
+    .google-icon {
+      width: 18px; height: 18px; flex-shrink: 0;
+    }
+
+    /* Divider OR */
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,0.08);
+    }
+    .auth-divider span { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; }
+
+    /* Form fields */
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block; font-size: 0.78rem; color: var(--muted);
+      margin-bottom: 7px; letter-spacing: 0.3px;
+    }
+    .form-input {
+      width: 100%; padding: 13px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      color: var(--text); outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-input::placeholder { color: rgba(102,136,114,0.6); }
+    .form-input:focus {
+      border-color: rgba(0,255,102,0.4);
+      background: rgba(0,255,102,0.04);
+    }
+    .form-input.error { border-color: #ff4444; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%; padding: 15px 20px; margin-top: 6px;
+      background: var(--accent); color: #000; border: none;
+      border-radius: 12px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600;
+      transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+      box-shadow: 0 0 24px rgba(0,255,102,0.2);
+    }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 0 36px rgba(0,255,102,0.3); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Error / success messages */
+    .auth-message {
+      padding: 10px 14px; border-radius: 8px; font-size: 0.82rem;
+      margin-bottom: 16px; display: none; line-height: 1.4;
+    }
+    .auth-message.show { display: block; }
+    .auth-message.error { background: rgba(255,68,68,0.12); border: 1px solid rgba(255,68,68,0.3); color: #ff8888; }
+    .auth-message.success { background: rgba(0,255,102,0.1); border: 1px solid rgba(0,255,102,0.25); color: var(--accent); }
+
+    /* Loading spinner inline */
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000; border-radius: 50%;
+      animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* User state in header */
+    .header-user {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid var(--accent); object-fit: cover;
+      background: var(--surface);
+    }
+    .user-name {
+      font-size: 0.85rem; font-weight: 500; color: var(--text);
+      max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .btn-signout {
+      background: transparent; border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted); padding: 6px 14px; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.8rem; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-signout:hover { border-color: rgba(255,68,68,0.5); color: #ff8888; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+    .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent); animation: pulse 2s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">MUZAFLIX</div>
+    <div id="headerAuth">
+      <button class="header-btn" id="btnOpenLogin">Iniciar sesión</button>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="poster-grid" aria-hidden="true">
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+      <div class="poster-cell"></div><div class="poster-cell"></div>
+    </div>
+    <div class="scan-line"></div>
+    <div class="scan-line"></div>
+    <div class="hero-overlay"></div>
+    <div class="ambient-glow"></div>
+
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Tus películas y series<br>
+        <span class="accent-word">favoritas</span><br>
+        en un solo lugar
+      </h1>
+      <p class="hero-sub">
+        Catálogo ilimitado de películas y series,<br>
+        sin interrupciones. Siempre <span style="color: var(--accent); font-weight: 500;">GRATIS</span>.
+      </p>
+      <p class="hero-price"></p>
+      <div class="hero-cta">
+        <button class="btn-primary" id="btnHeroCTA">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <line x1="19" y1="8" x2="19" y2="14"/>
+            <line x1="22" y1="11" x2="16" y2="11"/>
+          </svg>
+          Empezar a ver ahora
+        </button>
+      </div>
+    </div>
+
+    <div class="trending-preview">
+      <div class="trending-header">
+        <span class="trending-label">Tendencias</span>
+        <div class="trending-line"></div>
+      </div>
+      <div class="trending-scroll">
+        <div class="trending-card"><div class="card-bg"></div><div class="card-gradient"></div><span class="rank">1</span></div>
+        <div class="trending-card"><div class="card-bg"></div><div class="card-logo">N</div><div class="card-gradient"></div><span class="rank">2</span></div>
+        <div class="trending-card"><div class="card-bg"></div><div class="card-logo">N</div><div class="card-gradient"></div><span class="rank">3</span></div>
+        <div class="trending-card"><div class="card-bg"></div><div class="card-logo">N</div><div class="card-gradient"></div><span class="rank">4</span></div>
+        <div class="trending-card"><div class="card-bg"></div><div class="card-logo">N</div><div class="card-gradient"></div><span class="rank">5</span></div>
+      </div>
+    </div>
+
+    <div class="features">
+      <p class="features-title">¿Por qué Muzaflix?</p>
+      <div class="features-row">
+        <div class="feature-item"><div class="feature-icon">🎬</div><div class="feature-label">Catálogo</div><div class="feature-value">Ilimitado</div></div>
+        <div class="feature-item"><div class="feature-icon">📱</div><div class="feature-label">Dispositivos</div><div class="feature-value">Todos</div></div>
+        <div class="feature-item"><div class="feature-icon">🌐</div><div class="feature-label">Subtítulos</div><div class="feature-value">+20 idiomas</div></div>
+        <div class="feature-item"><div class="feature-icon">⚡</div><div class="feature-label">Stream</div><div class="feature-value">HD & 4K</div></div>
+      </div>
+    </div>
+
+    <div class="footer-cta">
+      <div class="divider"></div>
+      <p>
+        ¿Ya tenés una cuenta?&nbsp;<a href="#" id="linkLogin">Iniciar sesión</a>
+        &nbsp;·&nbsp;<a href="#">Términos de uso</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════ MODAL DE AUTENTICACIÓN ═══════════ -->
+  <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-label="Autenticación">
+    <div class="modal" id="authModalBox">
+      <button class="modal-close" id="btnCloseModal" aria-label="Cerrar">✕</button>
+
+      <div class="modal-logo">MUZAFLIX</div>
+      <div class="modal-title" id="modalTitle">Crear cuenta</div>
+      <div class="modal-sub" id="modalSub">Accedé gratis a todo el catálogo</div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabRegister" onclick="switchTab('register')">Registrarse</button>
+        <button class="auth-tab" id="tabLogin" onclick="switchTab('login')">Iniciar sesión</button>
+      </div>
+
+      <!-- Mensaje de error/éxito -->
+      <div class="auth-message" id="authMessage"></div>
+
+      <!-- Google -->
+      <button class="btn-google" id="btnGoogle">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continuar con Google
+      </button>
+
+      <div class="auth-divider"><span>O</span></div>
+
+      <!-- Formulario registro -->
+      <div id="formRegister">
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input class="form-input" id="regName" type="text" placeholder="Tu nombre" autocomplete="name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="regEmail" type="email" placeholder="tu@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" id="regPass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+        </div>
+        <button class="btn-submit" id="btnRegister">Crear cuenta gratis</button>
+      </div>
+
+      <!-- Formulario login -->
+      <div id="formLogin" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="loginEmail" type="email" placeholder="tu@email.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" id="loginPass" type="password" placeholder="Tu contraseña" autocomplete="current-password"/>
+        </div>
+        <button class="btn-submit" id="btnLogin">Entrar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signInWithPopup,
+      GoogleAuthProvider,
+      signOut,
+      onAuthStateChanged,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAJTWaZZtw-EiELVXEp2LkUCMmToBlcEk",
+      authDomain: "muzaflix.firebaseapp.com",
+      projectId: "muzaflix",
+      storageBucket: "muzaflix.firebasestorage.app",
+      messagingSenderId: "806873447459",
+      appId: "1:806873447459:web:54319905a57552ffe30596",
+      measurementId: "G-TQ21WCT90R"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // ── UI helpers ──
+    const modal        = document.getElementById('authModal');
+    const headerAuth   = document.getElementById('headerAuth');
+    const authMessage  = document.getElementById('authMessage');
+
+    function showMessage(text, type = 'error') {
+      authMessage.textContent = text;
+      authMessage.className = `auth-message show ${type}`;
+    }
+    function clearMessage() {
+      authMessage.className = 'auth-message';
+    }
+    function setLoading(btnId, loading, defaultText) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = loading;
+      btn.innerHTML = loading
+        ? `<span class="spinner"></span> Cargando...`
+        : defaultText;
+    }
+
+    // ── Modal open/close ──
+    function openModal(tab = 'register') {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      switchTab(tab);
+      clearMessage();
+    }
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('btnOpenLogin').addEventListener('click', () => openModal('login'));
+    document.getElementById('btnHeroCTA').addEventListener('click', () => openModal('register'));
+    document.getElementById('linkLogin').addEventListener('click', (e) => { e.preventDefault(); openModal('login'); });
+    document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    // ── Tab switching ──
+    window.switchTab = function(tab) {
+      clearMessage();
+      const isRegister = tab === 'register';
+      document.getElementById('tabRegister').classList.toggle('active', isRegister);
+      document.getElementById('tabLogin').classList.toggle('active', !isRegister);
+      document.getElementById('formRegister').style.display = isRegister ? 'block' : 'none';
+      document.getElementById('formLogin').style.display = isRegister ? 'none' : 'block';
+      document.getElementById('modalTitle').textContent = isRegister ? 'Crear cuenta' : 'Bienvenido de nuevo';
+      document.getElementById('modalSub').textContent = isRegister
+        ? 'Accedé gratis a todo el catálogo'
+        : 'Ingresá con tu cuenta de Muzaflix';
+    };
+
+    // ── Auth state observer ──
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Sesión activa → ir a la app
+        window.location.href = 'index.html';
+        return;
+      }
+      // Sin sesión → mostrar botones de login
+      headerAuth.innerHTML = `<button class="header-btn" id="btnOpenLogin">Iniciar sesión</button>`;
+      document.getElementById('btnOpenLogin').addEventListener('click', () => openModal('login'));
+      document.getElementById('btnHeroCTA').innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/>
+          <line x1="22" y1="11" x2="16" y2="11"/>
+        </svg>
+        Empezar a ver ahora`;
+    });
+
+    // ── Google Sign-In ──
+    document.getElementById('btnGoogle').addEventListener('click', async () => {
+      clearMessage();
+      const btn = document.getElementById('btnGoogle');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner" style="border-top-color:var(--accent)"></span> Conectando con Google...`;
+      try {
+        await signInWithPopup(auth, googleProvider);
+        // onAuthStateChanged handles the rest
+      } catch (err) {
+        let msg = 'Error al conectar con Google.';
+        if (err.code === 'auth/popup-closed-by-user') msg = 'Cerraste la ventana de Google. Intentá de nuevo.';
+        if (err.code === 'auth/popup-blocked') msg = 'Tu navegador bloqueó el popup. Permitilo e intentá de nuevo.';
+        showMessage(msg, 'error');
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>Continuar con Google`;
+      }
+    });
+
+    // ── Email Register ──
+    document.getElementById('btnRegister').addEventListener('click', async () => {
+      clearMessage();
+      const name  = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass  = document.getElementById('regPass').value;
+
+      if (!name) { showMessage('Ingresá tu nombre.'); return; }
+      if (!email) { showMessage('Ingresá tu email.'); return; }
+      if (pass.length < 6) { showMessage('La contraseña debe tener al menos 6 caracteres.'); return; }
+
+      setLoading('btnRegister', true);
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(cred.user, { displayName: name });
+        showMessage('¡Cuenta creada exitosamente!', 'success');
+      } catch (err) {
+        let msg = 'Error al crear la cuenta.';
+        if (err.code === 'auth/email-already-in-use') msg = 'Este email ya tiene una cuenta. Iniciá sesión.';
+        if (err.code === 'auth/invalid-email') msg = 'El email no es válido.';
+        if (err.code === 'auth/weak-password') msg = 'La contraseña es muy débil.';
+        showMessage(msg);
+      } finally {
+        setLoading('btnRegister', false, 'Crear cuenta gratis');
+      }
+    });
+
+    // ── Email Login ──
+    document.getElementById('btnLogin').addEventListener('click', async () => {
+      clearMessage();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass  = document.getElementById('loginPass').value;
+
+      if (!email) { showMessage('Ingresá tu email.'); return; }
+      if (!pass)  { showMessage('Ingresá tu contraseña.'); return; }
+
+      setLoading('btnLogin', true);
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (err) {
+        let msg = 'Error al iniciar sesión.';
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential')
+          msg = 'Email o contraseña incorrectos.';
+        if (err.code === 'auth/too-many-requests') msg = 'Demasiados intentos. Esperá unos minutos.';
+        showMessage(msg);
+      } finally {
+        setLoading('btnLogin', false, 'Entrar');
+      }
+    });
+
+    // ── Enter key in inputs ──
+    ['regName','regEmail','regPass'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('btnRegister').click();
+      });
+    });
+    ['loginEmail','loginPass'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('btnLogin').click();
+      });
+    });
+  </script>
+
+  <script>
+    // Animación stagger tendencias
+    document.querySelectorAll('.trending-card').forEach((card, i) => {
+      card.style.animationDelay = `${0.55 + i * 0.07}s`;
+      card.style.animation = 'fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both';
+    });
+
+    // Paralax sutil
+    window.addEventListener('scroll', () => {
+      const grid = document.querySelector('.poster-grid');
+      const scroll = window.scrollY;
+      grid.style.transform = `scale(1.08) translateY(${scroll * 0.12}px)`;
+    }, { passive: true });
+  </script>
+</body>
+</html>
