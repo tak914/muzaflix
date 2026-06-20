@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Muzaflix</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#00ff66">
+  <link rel="icon" type="image/png" href="61 sin título_20260516043555.png">
+  <meta name="theme-color" content="#050705">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Muzaflix">
+  <link rel="apple-touch-icon" href="61 sin título_20260516043555.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
@@ -28,7 +33,7 @@
       --card-w:       160px;
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; background: var(--bg); }
     body {
       background: var(--bg);
       color: var(--text);
@@ -1652,8 +1657,8 @@ border-right: 1px solid rgba(255,255,255,0.06);
         bottom: 0; left: 0; right: 0;
         height: 60px;
         background: rgba(10,12,10,0.92);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
         border-top: 1px solid rgba(0,255,102,0.10);
         z-index: 1060;
         align-items: stretch;
@@ -1689,6 +1694,7 @@ border-right: 1px solid rgba(255,255,255,0.06);
       .mbn-tab.active { color: var(--accent); }
       .mbn-tab.active svg { stroke: var(--accent); }
       .mbn-tab:active svg { transform: scale(0.88); }
+    }
 
     /* En desktop/tablet: ocultar bottom nav y pantallas mobile */
     @media (min-width: 769px) {
@@ -2220,6 +2226,7 @@ border-right: 1px solid rgba(255,255,255,0.06);
    <div id="muzaflix-cw-container"></div>
 
     <div id="catalog">
+      <div class="section" id="sec-popular">
         <div class="section-title">Populares Ahora<button class="see-more-btn" onclick="openCatalogView('Populares Ahora','/movie/popular','movie','')">VER MÁS</button></div>
         <div class="carousel" id="carousel-popular"></div>
       </div>
@@ -2839,6 +2846,7 @@ function attachLongPressToCarousel() {
       document.getElementById("hero-featured").style.display = "none";
       document.getElementById("search-results").style.display = "none";
       document.getElementById("catalog").style.display = "none";
+      document.getElementById("sec-providers").style.display = "none";
       const view = document.getElementById("catalog-view");
       view.style.display = "";
       document.getElementById("catalog-view-title").textContent = title;
@@ -2851,6 +2859,7 @@ function attachLongPressToCarousel() {
       renderSkeletons(grid, 18);
       await _loadCatalogPage();
       window.scrollTo({ top: 0, behavior: "smooth" });
+      history.pushState({ catalogViewOpen: true }, "");
     }
 
     async function _loadCatalogPage() {
@@ -2874,9 +2883,13 @@ function attachLongPressToCarousel() {
       document.getElementById("catalog-view").style.display = "none";
       document.getElementById("catalog").style.display = "";
       document.getElementById("hero-featured").style.display = "";
+      document.getElementById("sec-providers").style.display = "";
     }
 
-    document.getElementById("catalog-back-btn").addEventListener("click", closeCatalogView);
+    document.getElementById("catalog-back-btn").addEventListener("click", () => {
+      if (history.state && history.state.catalogViewOpen) history.back();
+      else closeCatalogView();
+    });
     document.getElementById("catalog-load-more").addEventListener("click", () => {
       _catalogState.page += 1;
       _loadCatalogPage();
@@ -3535,6 +3548,12 @@ document.addEventListener("webkitfullscreenchange", async () => {
 
        /* ─── GESTO ATRÁS (Android) ──────────────────────────── */
     window.addEventListener("popstate", (e) => {
+      // 0. Cerrar catalog view con botón atrás
+      const catalogView = document.getElementById("catalog-view");
+      if (catalogView && catalogView.style.display !== "none") {
+        closeCatalogView();
+        return;
+      }
       // 1. Cerrar search overlay con botón atrás
       const overlay = document.getElementById("search-overlay");
       if (overlay && overlay.style.display !== "none") {
