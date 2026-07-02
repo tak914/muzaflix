@@ -619,7 +619,18 @@ box-shadow:
     }
     @keyframes shimmer { from { transform:translateX(-100%); } to { transform:translateX(100%); } }
 
-    /* ─── PROVIDERS TABS (Filtro por plataforma) ──── */
+    /* ─── Skeleton cuenta (perfil + engranaje) mientras carga Firebase ─── */
+    .mzx-account-skeleton {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--surface); border: 1px solid var(--border);
+      position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .mzx-account-skeleton.square { border-radius: 8px; }
+    .mzx-account-skeleton::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,255,102,0.08), transparent);
+      animation: shimmer 1.5s infinite;
+    }
     .providers-tabs {
       display: flex; align-items: center; gap: 14px;
       padding: 4px 40px 22px; overflow-x: auto; overflow-y: visible;
@@ -2156,7 +2167,10 @@ border-right: 1px solid rgba(255,255,255,0.06);
 
 <div id="profile-screen">
   <!-- Cuenta Firebase — esquina superior derecha -->
-  <div id="mzx-profile-account" style="position:absolute;top:18px;right:18px;display:flex;align-items:center;gap:8px;"></div>
+  <div id="mzx-profile-account" style="position:absolute;top:18px;right:18px;display:flex;align-items:center;gap:8px;">
+    <div class="mzx-account-skeleton"></div>
+    <div class="mzx-account-skeleton square"></div>
+  </div>
   <h1 class="profile-title">¿Quién está viendo?</h1>
   <div id="profile-list"></div>
   <button id="edit-profiles-btn">Editar perfil</button>
