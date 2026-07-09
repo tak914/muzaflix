@@ -857,6 +857,43 @@ box-shadow:
 
     /* ── Player inside modal ── */
     .modal-body { padding: 0; }
+    .server-selector {
+      display: flex;
+      gap: 8px;
+      padding: 12px 18px;
+      flex-wrap: wrap;
+    }
+    .server-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,255,102,0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .server-btn:hover { border-color: var(--accent); color: var(--text); }
+    .server-btn.active {
+      background: rgba(0,255,102,0.12);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .server-btn .server-badge {
+      background: var(--accent);
+      color: #000;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      letter-spacing: 0.2px;
+    }
+    .server-btn.active .server-badge { background: #000; color: var(--accent); }
     .player-wrap {
       position: relative;
       width: 100%;
@@ -1237,6 +1274,37 @@ box-shadow:
   font-weight: 700;
 
   cursor: pointer;
+}
+
+/* Botón no-intrusivo que aparece antes de que termine el episodio */
+#next-ep-mini-btn {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  z-index: 15;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10,14,10,0.88);
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  animation: heroBadgePop 0.4s ease-out;
+  transition: background 0.2s, transform 0.15s;
+}
+#next-ep-mini-btn:hover {
+  background: var(--accent);
+  color: #000;
+  transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+  #next-ep-mini-btn { bottom: 10px; right: 10px; padding: 8px 14px; font-size: 0.75rem; }
 }
 
     /* ─── FULLSCREEN FORZADO ─────────────────────── */
@@ -2878,6 +2946,20 @@ border-right: 1px solid rgba(255,255,255,0.06);
 
       <!-- ── Player ── -->
       <div class="modal-body">
+        <div class="server-selector" id="server-selector">
+          <button type="button" class="server-btn" data-server="imdb" onclick="selectServer('imdb')">
+            Servidor 1
+          </button>
+          <button type="button" class="server-btn" data-server="cinesrc" onclick="selectServer('cinesrc')">
+            Servidor 2 <span class="server-badge">Español Latino</span>
+          </button>
+          <button type="button" class="server-btn" data-server="vidsrc" onclick="selectServer('vidsrc')">
+            Servidor 3
+          </button>
+          <button type="button" class="server-btn active" data-server="sbs" onclick="selectServer('sbs')">
+            Servidor 4 <span class="server-badge">Sub Español</span>
+          </button>
+        </div>
         <div class="player-wrap">
           <iframe
             id="movie-frame"
@@ -2888,7 +2970,7 @@ border-right: 1px solid rgba(255,255,255,0.06);
             webkitallowfullscreen
             mozallowfullscreen
             allow="autoplay; fullscreen *; encrypted-media; picture-in-picture"
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation"
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation allow-popups allow-popups-to-escape-sandbox allow-orientation-lock allow-pointer-lock allow-modals"
             referrerpolicy="origin"
           ></iframe>
           <div id="next-episode-overlay">
@@ -2898,6 +2980,9 @@ border-right: 1px solid rgba(255,255,255,0.06);
               <button id="play-next-btn">▶ Ver ahora</button>
             </div>
           </div>
+          <button id="next-ep-mini-btn" type="button" style="display:none;">
+            Siguiente capítulo ▶
+          </button>
         </div>
         <p class="player-note">Servidor PlayIMDb Activo · Si hay problemas, usa ⛶ pantalla completa.</p>
       </div>
@@ -2944,6 +3029,12 @@ border-right: 1px solid rgba(255,255,255,0.06);
     window.API_BASE = API_BASE;
     const STREAM_MOVIE  = "https://streamimdb.ru/embed/movie/";
     const STREAM_TV     = "https://streamimdb.ru/embed/tv/";
+    const CINESRC_MOVIE = "https://cinesrc.st/embed/movie/";
+    const CINESRC_TV    = "https://cinesrc.st/embed/tv/";
+    const VIDSRC_MOVIE  = "https://vidsrc.cc/v2/embed/movie/";
+    const VIDSRC_TV     = "https://vidsrc.cc/v2/embed/tv/";
+    const SBS_MOVIE     = "https://vidsrc.sbs/embed/movie/";
+    const SBS_TV        = "https://vidsrc.sbs/embed/tv/";
     const IMG_BASE      = "https://image.tmdb.org/t/p/w500";
     const IMG_LG        = "https://image.tmdb.org/t/p/w1280";
 
@@ -2983,7 +3074,132 @@ border-right: 1px solid rgba(255,255,255,0.06);
     let currentItem     = null;  // objeto completo del item abierto
     let currentImdbId   = null;
     let currentType     = null;  // 'movie' | 'tv'
+    let currentServer   = 'sbs'; // 'imdb' | 'cinesrc' | 'vidsrc' | 'sbs'
+    let currentSeason   = 1;
+    let currentEpisode  = 1;
+
+    /* ─── SELECTOR DE SERVIDORES ───────────────────────────
+       'imdb'    -> streamimdb.ru (requiere IMDb ID)
+       'cinesrc' -> cinesrc.st (usa el ID de TMDB, multi-idioma
+                    incluyendo Español Latino) ────────────── */
+    function buildCinesrcParams() {
+      const params = new URLSearchParams();
+      params.set("color", "#00ff66");     // acento verde de Muzaflix
+      params.set("autoplay", "true");
+      params.set("autonext", "true");     // pasa solo al siguiente episodio
+      params.set("back", "close");        // el botón de volver del player nos avisa por postMessage
+      params.set("prioritize", "true");   // prioriza el último servidor interno usado
+
+      // Reanudar donde quedó (si hay progreso guardado para este mismo item/episodio)
+      if (currentItem) {
+        const saved = getProgress(currentItem.id);
+        if (saved && saved.sec > 5) {
+          const mismoEpisodio = currentType !== "tv"
+            || (Number(saved.season) === Number(currentSeason) && Number(saved.episode) === Number(currentEpisode));
+          if (mismoEpisodio) {
+            params.set("t", Math.floor(saved.sec));
+          }
+        }
+      }
+      return params;
+    }
+
+    /* 'sbs' -> vidsrc.sbs (usa el ID de TMDB, soporta resume con "t="
+       y subtítulo preseleccionado en español con "sub=es") */
+    function buildSbsParams() {
+      const params = new URLSearchParams();
+      params.set("autoplay", "1");
+      params.set("color", "00ff66");  // acá va sin el '#', a diferencia de CineSrc
+      params.set("sub", "es");
+
+      if (currentItem) {
+        const saved = getProgress(currentItem.id);
+        if (saved && saved.sec > 5) {
+          const mismoEpisodio = currentType !== "tv"
+            || (Number(saved.season) === Number(currentSeason) && Number(saved.episode) === Number(currentEpisode));
+          if (mismoEpisodio) {
+            params.set("t", Math.floor(saved.sec));
+          }
+        }
+      }
+      return params;
+    }
+
+    function buildPlayerUrl(server) {
+      server = server || currentServer;
+      if (currentType === "movie") {
+        if (server === "cinesrc") {
+          return currentItem ? `${CINESRC_MOVIE}${currentItem.id}?${buildCinesrcParams().toString()}` : "";
+        }
+        if (server === "vidsrc") {
+          return currentImdbId ? `${VIDSRC_MOVIE}${currentImdbId}?poster=true&autoPlay=false` : "";
+        }
+        if (server === "sbs") {
+          return currentItem ? `${SBS_MOVIE}${currentItem.id}?${buildSbsParams().toString()}` : "";
+        }
+        return currentImdbId ? `${STREAM_MOVIE}${currentImdbId}/` : "";
+      }
+      // TV
+      if (server === "cinesrc") {
+        if (!currentItem) return "";
+        const params = buildCinesrcParams();
+        params.set("s", currentSeason);
+        params.set("e", currentEpisode);
+        return `${CINESRC_TV}${currentItem.id}?${params.toString()}`;
+      }
+      if (server === "vidsrc") {
+        return currentImdbId
+          ? `${VIDSRC_TV}${currentImdbId}/${currentSeason}/${currentEpisode}?poster=true&autoPlay=false`
+          : "";
+      }
+      if (server === "sbs") {
+        return currentItem
+          ? `${SBS_TV}${currentItem.id}/${currentSeason}/${currentEpisode}?${buildSbsParams().toString()}`
+          : "";
+      }
+      return currentImdbId ? `${STREAM_TV}${currentImdbId}/${currentSeason}/${currentEpisode}` : "";
+    }
+
+    function updatePlayerNote() {
+      const note = document.querySelector(".player-note");
+      if (!note) return;
+      const textos = {
+        cinesrc: "Servidor 2 Activo · Multi-idioma (incluye Español Latino) · Si hay problemas, usa ⛶ pantalla completa.",
+        vidsrc:  "Servidor 3 Activo · Si hay problemas, probá el Servidor 1 o 2 · Usa ⛶ pantalla completa.",
+        sbs:     "Servidor 4 Activo · Subtítulo en español preseleccionado · Usa ⛶ pantalla completa.",
+        imdb:    "Servidor PlayIMDb Activo · Si hay problemas, usa ⛶ pantalla completa."
+      };
+      note.textContent = textos[currentServer] || textos.imdb;
+    }
+
+    function loadCurrentPlayer() {
+      const url = buildPlayerUrl();
+      if (!url) return;
+      movieFrame.src = "about:blank";
+      setTimeout(() => { movieFrame.src = url; }, 120);
+      updatePlayerNote();
+    }
+
+    function selectServer(server) {
+      if (currentServer === server) return;
+      currentServer = server;
+      document.querySelectorAll(".server-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.server === server);
+      });
+      if (currentItem) persistLastServer(currentItem.id, server);
+      loadCurrentPlayer();
+      // Si pasamos a CineSrc, el overlay/timer propio de "siguiente episodio"
+      // queda de más (CineSrc ya avisa por evento cuando cambia de capítulo).
+      if (server === "cinesrc") {
+        clearTimeout(nextEpisodeTimer);
+        if (nextOverlay) nextOverlay.style.display = "none";
+      } else if (currentType === "tv") {
+        startNextEpisodeCountdown();
+      }
+    }
+    window.selectServer = selectServer;
     let currentSeasons  = 1;
+    let nextEpisodeTimer = null;
 
     /* ─── HELPERS DE PERFIL (todas las claves con prefijo del perfil activo) ─── */
     function getActiveProfile() {
@@ -2992,12 +3208,19 @@ border-right: 1px solid rgba(255,255,255,0.06);
     function profileKey(base) {
       return `${base}__${getActiveProfile()}`;
     }
-    /* Guardar progreso: { season, episode, pct } por item */
-    function saveProgress(item, season, episode, pct) {
+    /* Guardar progreso: { season, episode, pct, sec, server } por item */
+    function saveProgress(item, season, episode, pct, sec) {
       const key = profileKey("muzaflix_progress");
       let data = {};
       try { data = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
-      data[item.id] = { season: Number(season), episode: Number(episode), pct: Number(pct||0), ts: Date.now() };
+      data[item.id] = {
+        season: Number(season),
+        episode: Number(episode),
+        pct: Number(pct || 0),
+        sec: Number(sec || 0),
+        server: currentServer,
+        ts: Date.now()
+      };
       localStorage.setItem(key, JSON.stringify(data));
     }
     function getProgress(itemId) {
@@ -3006,6 +3229,17 @@ border-right: 1px solid rgba(255,255,255,0.06);
         const data = JSON.parse(localStorage.getItem(key)) || {};
         return data[itemId] || null;
       } catch { return null; }
+    }
+    /* Recordar el servidor elegido para este item sin pisar season/episode/pct/sec */
+    function persistLastServer(itemId, server) {
+      const key = profileKey("muzaflix_progress");
+      let data = {};
+      try { data = JSON.parse(localStorage.getItem(key)) || {}; } catch {}
+      const existing = data[itemId] || { season: 0, episode: 0, pct: 0, sec: 0 };
+      existing.server = server;
+      existing.ts = Date.now();
+      data[itemId] = existing;
+      localStorage.setItem(key, JSON.stringify(data));
     }
 
     /* ─── DOM REFS ───────────────────────────────────────── */
@@ -3023,6 +3257,7 @@ border-right: 1px solid rgba(255,255,255,0.06);
     const tvLoadBtn     = document.getElementById("tv-load-btn");
     const nextOverlay   = document.getElementById("next-episode-overlay");
     const nextBtn       = document.getElementById("play-next-btn");
+    const nextEpMiniBtn = document.getElementById("next-ep-mini-btn");
     const heroPlayBtn   = document.getElementById("hero-play-btn");
     const heroInfoBtn   = document.getElementById("hero-info-btn");
     /* ─── CALIFICACIONES / RESEÑAS (por perfil, local + cloud) ────── */
@@ -3192,6 +3427,17 @@ function _mzGuardarProgresoDesdeIframe(currentTime, duration, idTmdb) {
   if (!duration || isNaN(currentTime) || isNaN(duration)) return;
 
   const porcentaje = (currentTime / duration) * 100;
+  const restante    = duration - currentTime;
+
+  // ── Botón flotante "Siguiente capítulo" (independiente de los
+  //    filtros de guardado de abajo, sólo depende de cuánto falta) ──
+  if (currentType === "tv" && currentItem && String(currentItem.id) === String(idTmdb)) {
+    if (restante > 0 && restante <= NEXT_EP_THRESHOLD_SEC && hasNextEpisode()) {
+      showNextEpMiniBtn();
+    } else if (restante > NEXT_EP_THRESHOLD_SEC + 5) {
+      hideNextEpMiniBtn();
+    }
+  }
 
   // ── Filtro de entrada: < 60 s O < 3 % ────────────────────────
   if (currentTime < 60 || porcentaje < 3) return;
@@ -3215,7 +3461,7 @@ function _mzGuardarProgresoDesdeIframe(currentTime, duration, idTmdb) {
     const episode = (currentItem._type === 'tv')
                     ? Number(document.getElementById('sel-episode')?.value || 1)
                     : 0;
-    saveProgress(currentItem, season, episode, porcentaje);
+    saveProgress(currentItem, season, episode, porcentaje, currentTime);
   }
 
   // Registrar en Continuar Viendo y re-renderizar
@@ -3255,6 +3501,88 @@ function _mzGuardarProgresoDesdeIframe(currentTime, duration, idTmdb) {
   });
 
   console.info('[Muzaflix] ✅ Listener postMessage registrado (streamimdb.ru).');
+})();
+
+/* ─── MÓDULO: EVENTOS postMessage (iframe cinesrc.st) ───────────
+   cinesrc.st habla un protocolo mucho más rico que streamimdb.ru:
+   progreso real (timeupdate), fin de reproducción (ended), cambio
+   de episodio interno (nextepisode) y botón de volver (close).
+   Todo queda encapsulado acá para no tocar el módulo de arriba. ─── */
+(function _registrarListenerCinesrc() {
+  const DOMINIO_PERMITIDO = 'cinesrc.st';
+
+  window.addEventListener('message', function(event) {
+    // Validar origen
+    try {
+      const origen = new URL(event.origin);
+      if (!origen.hostname.endsWith(DOMINIO_PERMITIDO)) return;
+    } catch {
+      return; // origin 'null' (sandboxed) o inválido → ignorar
+    }
+
+    const data = event.data;
+    if (!data || !data.type) return;
+    const idActual = currentItem?.id;
+
+    switch (data.type) {
+
+      case 'cinesrc:ready':
+        console.info('[Muzaflix] ✅ CineSrc listo.');
+        break;
+
+      case 'cinesrc:timeupdate':
+        // Reutilizamos exactamente la misma lógica de guardado que usa
+        // streamimdb.ru (filtros de 3%/92%, Continuar Viendo, etc.)
+        if (idActual && data.currentTime !== undefined && data.duration !== undefined) {
+          _mzGuardarProgresoDesdeIframe(data.currentTime, data.duration, idActual);
+        }
+        break;
+
+      case 'cinesrc:ended':
+        // Fin real de reproducción (no un timer estimado): la sacamos
+        // de Continuar Viendo directamente.
+        if (idActual) {
+          const listaActualizada = getContinueWatching().filter(
+            item => String(item.id) !== String(idActual)
+          );
+          saveContinueWatching(listaActualizada);
+          renderContinueWatching();
+          console.info('[Muzaflix] 🎬 CineSrc: reproducción finalizada — eliminado de Continuar Viendo.');
+        }
+        break;
+
+      case 'cinesrc:nextepisode':
+        // El player ya cambió de episodio internamente (autonext, botón,
+        // selector propio o "up next"). NO tocamos el iframe: sólo
+        // sincronizamos nuestro estado y la UI de temporada/episodio.
+        if (data.internalNavigation && currentType === 'tv') {
+          const s = Number(data.season) || currentSeason;
+          const e = Number(data.episode) || currentEpisode;
+          currentSeason  = s;
+          currentEpisode = e;
+          if (selSeason)  selSeason.value  = s;
+          if (selEpisode) selEpisode.value = e;
+          if (currentItem) saveProgress(currentItem, s, e, 0, 0);
+          hideNextEpMiniBtn();
+          console.info(`[Muzaflix] ⏭️ CineSrc avanzó solo a T${s}E${e} (${data.source || 'auto'}).`);
+        }
+        break;
+
+      case 'cinesrc:close':
+        // El usuario tocó el botón "volver" propio del player (back=close)
+        if (typeof closeModal === 'function') closeModal();
+        break;
+
+      case 'cinesrc:error':
+        console.warn('[Muzaflix] ⚠️ Error en CineSrc:', data.error);
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  console.info('[Muzaflix] ✅ Listener postMessage registrado (cinesrc.st).');
 })();
 
 
@@ -3722,6 +4050,15 @@ function attachLongPressToCarousel() {
       tvSelectors.classList.remove("visible");
       currentImdbId  = null;
       currentSeasons = 1;
+      hideNextEpMiniBtn();
+
+      // Recordar el último servidor usado para este título (si lo hay)
+      const rememberedServer = getProgress(item.id)?.server;
+      const SERVERS_VALIDOS = ["imdb", "cinesrc", "vidsrc", "sbs"];
+      currentServer = SERVERS_VALIDOS.includes(rememberedServer) ? rememberedServer : "sbs";
+      document.querySelectorAll(".server-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.server === currentServer);
+      });
       updateFavBtn(item);
 
       backdrop.classList.add("open");
@@ -3801,16 +4138,26 @@ function attachLongPressToCarousel() {
 
         if (currentType === "movie") {
           currentImdbId = detail.imdb_id || null;
-          if (currentImdbId) {
-            movieFrame.src = `${STREAM_MOVIE}${currentImdbId}/`;
-            // Continuar Viendo se guarda sólo cuando el usuario
-            // supera 60 s de reproducción (via postMessage del iframe)
+          if (!currentImdbId && (currentServer === "imdb" || currentServer === "vidsrc")) {
+            currentServer = "cinesrc";
+            document.querySelectorAll(".server-btn").forEach(b => {
+              b.classList.toggle("active", b.dataset.server === "cinesrc");
+            });
           }
+          loadCurrentPlayer();
+          // Continuar Viendo se guarda sólo cuando el usuario
+          // supera 60 s de reproducción (via postMessage del iframe)
         } else {
           currentSeasons = detail.number_of_seasons || 1;
           const extRes = await fetch(`${API_BASE}/tv/${item.id}/external_ids?api_key=${API_KEY}`);
           const extData = await extRes.json();
           currentImdbId = extData.imdb_id || null;
+          if (!currentImdbId && (currentServer === "imdb" || currentServer === "vidsrc")) {
+            currentServer = "cinesrc";
+            document.querySelectorAll(".server-btn").forEach(b => {
+              b.classList.toggle("active", b.dataset.server === "cinesrc");
+            });
+          }
           buildTVSelectors(currentSeasons);
           tvSelectors.classList.add("visible");
 
@@ -3830,11 +4177,7 @@ function attachLongPressToCarousel() {
           // ── Build episode panel (ya con selSeason/selEpisode restaurados) ──
           await buildEpisodePanel(item.id, currentSeasons, savedProg);
 
-          if (currentImdbId) {
-            loadTVEpisode();
-          } else {
-            console.warn("Serie sin imdb_id");
-          }
+          loadTVEpisode();
         }
       } catch (err) {
         console.error("Error obteniendo detalles:", err);
@@ -3993,21 +4336,33 @@ function attachLongPressToCarousel() {
   const s = Number(forceSeason ?? selSeason.value ?? 1) || 1;
   const e = Number(forceEpisode ?? selEpisode.value ?? 1) || 1;
 
+  currentSeason  = s;
+  currentEpisode = e;
+  hideNextEpMiniBtn();
+
+  const url = buildPlayerUrl();
+  console.log("Cargando episodio:", url);
+
   // Forzar recarga limpia del iframe
   movieFrame.src = "about:blank";
 
   setTimeout(() => {
 
-    const url =
-      `${STREAM_TV}${currentImdbId}/${s}/${e}`;
-
-    console.log("Cargando episodio:", url);
-
     movieFrame.src = url;
+    updatePlayerNote();
 
-    // Guardar progreso del episodio actual para este perfil
+    // Guardar progreso del episodio actual para este perfil.
+    // Si es el MISMO episodio que ya teníamos guardado (p.ej. reabriendo
+    // el modal), preservamos pct/sec en vez de pisarlos con 0 — si no,
+    // "Continuar viendo desde acá" se rompía apenas se cargaba el player.
     if (currentItem) {
-      saveProgress(currentItem, s, e, 0);
+      const prev = getProgress(currentItem.id);
+      const mismoEpisodio = prev && Number(prev.season) === s && Number(prev.episode) === e;
+      saveProgress(
+        currentItem, s, e,
+        mismoEpisodio ? (prev.pct || 0) : 0,
+        mismoEpisodio ? (prev.sec || 0) : 0
+      );
       // Continuar Viendo se actualiza con el cronómetro propio de la
       // página al acumular 60s con el modal abierto (ver _mzWatchTimer*)
     }
@@ -4017,11 +4372,13 @@ function attachLongPressToCarousel() {
 }
 /* ─── AUTO NEXT EPISODE ───────────────────── */
 
-let nextEpisodeTimer = null;
-
 function startNextEpisodeCountdown() {
 
   if (currentType !== "tv") return;
+  // CineSrc ya maneja el auto-avance de episodio de forma real (evento
+  // cinesrc:nextepisode); el overlay propio es sólo un timer estimado
+  // para el otro servidor, así que lo evitamos acá para no duplicar UI.
+  if (currentServer === "cinesrc") return;
 
   clearTimeout(nextEpisodeTimer);
 
@@ -4048,6 +4405,7 @@ function startNextEpisodeCountdown() {
       movieFrame.src    = "";
       document.body.style.overflow = "";
       _mzWatchTimerStop();
+      hideNextEpMiniBtn();
       // Limpiar el hash de la URL al cerrar
       history.replaceState(null, "", window.location.pathname + window.location.search);
       try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
@@ -4056,7 +4414,31 @@ function startNextEpisodeCountdown() {
     closeBtn.addEventListener("click", closeModal);
     backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
 
-nextBtn?.addEventListener("click", () => {
+/* ─── SIGUIENTE EPISODIO: lógica compartida entre el overlay
+   grande ("Ver ahora") y el botón flotante no-intrusivo ─── */
+const NEXT_EP_THRESHOLD_SEC = 45; // segundos antes del final para mostrar el botón flotante
+
+function hasNextEpisode() {
+  if (!selSeason || !selEpisode) return false;
+  let season  = Number(selSeason.value);
+  let episode = Number(selEpisode.value) + 1;
+  if (episode > selEpisode.options.length) {
+    season++;
+    episode = 1;
+  }
+  return season <= selSeason.options.length;
+}
+
+function showNextEpMiniBtn() {
+  if (nextEpMiniBtn && nextEpMiniBtn.style.display !== "flex") {
+    nextEpMiniBtn.style.display = "flex";
+  }
+}
+function hideNextEpMiniBtn() {
+  if (nextEpMiniBtn) nextEpMiniBtn.style.display = "none";
+}
+
+function goToNextEpisode() {
 
   let season =
     Number(selSeason.value);
@@ -4075,6 +4457,7 @@ nextBtn?.addEventListener("click", () => {
   if (season > selSeason.options.length) {
 
     nextOverlay.style.display = "none";
+    hideNextEpMiniBtn();
     return;
   }
 
@@ -4087,10 +4470,13 @@ nextBtn?.addEventListener("click", () => {
     loadTVEpisode();
 
     nextOverlay.style.display = "none";
+    hideNextEpMiniBtn();
 
   }, 150);
+}
 
-});
+nextBtn?.addEventListener("click", goToNextEpisode);
+nextEpMiniBtn?.addEventListener("click", goToNextEpisode);
     /* ─── FAVORITOS ──────────────────────────────────────── */
     favBtn.addEventListener("click", () => {
       if (!currentItem) return;
@@ -4139,16 +4525,33 @@ fsBtn.addEventListener("click", toggleCustomFullscreen);
 
 async function toggleCustomFullscreen() {
   const target = document.querySelector(".player-wrap");
+  const yaForzado = modal.classList.contains("forced-fullscreen");
 
   try {
-    if (!document.fullscreenElement) {
+    if (!document.fullscreenElement && !yaForzado) {
 
-      if (target.requestFullscreen) {
-        await target.requestFullscreen();
-      } else if (target.webkitRequestFullscreen) {
-        target.webkitRequestFullscreen();
-      } else if (target.msRequestFullscreen) {
-        target.msRequestFullscreen();
+      // Intento 1: Fullscreen API nativa
+      let entroFullscreenNativo = false;
+      try {
+        if (target.requestFullscreen) {
+          await target.requestFullscreen();
+          entroFullscreenNativo = true;
+        } else if (target.webkitRequestFullscreen) {
+          target.webkitRequestFullscreen();
+          entroFullscreenNativo = true;
+        } else if (target.msRequestFullscreen) {
+          target.msRequestFullscreen();
+          entroFullscreenNativo = true;
+        }
+      } catch (err) {
+        console.warn("Fullscreen nativo falló, uso el modo forzado por CSS:", err);
+      }
+
+      // Fallback: Safari/iOS y algunos WebViews no permiten requestFullscreen
+      // en elementos que no sean <video>. Ahí usamos el modo "forced-fullscreen"
+      // (ya viene con sus estilos armados, sólo faltaba activarlo).
+      if (!entroFullscreenNativo) {
+        modal.classList.add("forced-fullscreen");
       }
 
       fsBtn.textContent = "✕";
@@ -4159,10 +4562,15 @@ async function toggleCustomFullscreen() {
 
     } else {
 
-      if (document.exitFullscreen) {
-        await document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
+      if (document.fullscreenElement) {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+      if (modal.classList.contains("forced-fullscreen")) {
+        modal.classList.remove("forced-fullscreen");
       }
 
       fsBtn.textContent = "⛶";
