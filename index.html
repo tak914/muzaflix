@@ -5363,6 +5363,9 @@ function renderProfiles() {
       if (typeof window._mzxInvalidateProfileCache === 'function') window._mzxInvalidateProfileCache();
       // Entrar inmediatamente con datos locales
       profileScreen.style.display = "none";
+      // Si esta visita llegó desde un link compartido, abrir la película/serie
+      // recién ahora, cuando ya existe un perfil activo.
+      handleDeepLink();
       renderFavs();
       renderContinueWatching();
       updateHeaderProfileBadge(profile);
@@ -5662,6 +5665,25 @@ justify-content:center;
   }
 });
 
+/* ─── DEEP LINK DE PELÍCULAS/SERIES ───────────────────────── */
+async function handleDeepLink() {
+  const hash = window.location.hash;
+  const match = hash.match(/^#(movie|tv)-(\d+)$/);
+  if (!match) return false;
+
+  try {
+    const res = await fetch(`${API_BASE}/${match[1]}/${match[2]}?api_key=${API_KEY}&language=es-MX`);
+    if (!res.ok) throw new Error(`TMDb respondió ${res.status}`);
+    const item = await res.json();
+    item._type = match[1];
+    openModal(item);
+    return true;
+  } catch (e) {
+    console.warn("No se pudo abrir el link compartido:", e);
+    return false;
+  }
+}
+
 /* ─── REEMPLAZO 1: NUEVA FUNCIÓN DE INICIALIZACIÓN ─── */
 function initProfiles() {
   renderProfiles();
@@ -5677,14 +5699,14 @@ function initProfiles() {
     const profiles = getProfiles();
     const activeProfile = profiles.find(p => p.name === saved);
     if (activeProfile) updateHeaderProfileBadge(activeProfile);
+    // Si entramos con un link compartido y ya hay perfil, abrirlo ahora.
+    handleDeepLink();
   } else {
     // Si es una nueva entrada (no hay sesión), forzamos el selector
     profileScreen.style.display = "flex";
     
-    // Limpiamos el hash de la URL por si quedó un deep-link colgado antes de elegir perfil
-    if (window.location.hash) {
-      history.replaceState(null, "", window.location.pathname + window.location.search);
-    }
+    // IMPORTANTE: no borrar el hash acá. Puede ser un deep-link compartido
+    // que todavía debe abrirse después de seleccionar el perfil.
   }
 }
 // Al final de todo tu script, donde llamás a las funciones iniciales:
@@ -5890,17 +5912,9 @@ initProfiles();
       initProviderFilter();
       loadCarousel("carousel-popular", "/movie/popular", "movie", "", "Populares Ahora");
       loadDynamicRows();
-      // Deep link
-      const hash = window.location.hash;
-      const match = hash.match(/^#(movie|tv)-(\d+)$/);
-      if (match) {
-        try {
-          const res  = await fetch(`${API_BASE}/${match[1]}/${match[2]}?api_key=${API_KEY}&language=es-MX`);
-          const item = await res.json();
-          item._type = match[1];
-          openModal(item);
-        } catch(e) { console.warn("No se pudo abrir el link compartido:", e); }
-      }
+      // El deep-link se procesa desde initProfiles(), después de que exista un perfil.
+      // Si el hash cambia manualmente, también intentamos abrirlo.
+      window.addEventListener("hashchange", () => handleDeepLink());
     }
 init();
 loadHeroFeatured();
